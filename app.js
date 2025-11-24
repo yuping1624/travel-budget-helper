@@ -834,11 +834,11 @@ function updateBudgetDisplay() {
     // Update footer displays
     const footerBudgetEl = document.getElementById('footer-budget');
     if (footerBudgetEl) {
-        footerBudgetEl.textContent = `NT$ ${Math.round(budget)}`;
+        footerBudgetEl.textContent = `NT$ ${Math.round(budget).toLocaleString()}`;
     }
 
-    elements.totalSpent.textContent = `NT$ ${Math.round(totalSpent)}`;
-    elements.remainingBudget.textContent = `NT$ ${Math.round(remaining)}`;
+    elements.totalSpent.textContent = `NT$ ${Math.round(totalSpent).toLocaleString()}`;
+    elements.remainingBudget.textContent = `NT$ ${Math.round(remaining).toLocaleString()}`;
 
     // Update progress bar
     const progressBar = document.getElementById('budget-progress-bar');

@@ -160,19 +160,7 @@ select:focus {
     }
 }
 
-/* Statistics cards animation */
-#stats-section {
-    animation: fadeIn 0.4s ease;
-}
-
-#stats-section>div>div {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-#stats-section>div>div:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
+/* Statistics cards - static, no animation */
 
 /* ========== Enhanced Visual Depth and Layers ========== */
 
@@ -186,6 +174,26 @@ section:hover {
     transform: translateY(-2px);
 }
 
+/* Statistics section - static, no hover effects */
+#stats-section {
+    transition: none !important;
+}
+
+#stats-section:hover {
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+/* List view section - static, no hover effects */
+#list-view {
+    transition: none !important;
+}
+
+#list-view:hover {
+    box-shadow: none !important;
+    transform: none !important;
+}
+
 /* Footer enhanced shadow */
 footer {
     box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06) !important;
@@ -196,9 +204,9 @@ footer {
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-/* Statistics cards elevated effect */
+/* Statistics cards - simplified */
 #stats-section>div>div {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
 /* Enhanced button depth */
@@ -301,13 +309,14 @@ select:focus {
 
 /* ========== Item Cards Optimization ========== */
 
-/* Item card hover effect */
+/* Item card with hover effect */
 .item-card {
     cursor: default;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .item-card:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
     transform: translateX(2px);
 }
 
