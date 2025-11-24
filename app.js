@@ -680,7 +680,22 @@ function renderItems() {
 
     itemsToShow.forEach(item => {
         const itemEl = document.createElement('div');
-        itemEl.className = 'bg-white p-3 rounded shadow-sm border border-gray-100 flex justify-between items-center';
+
+        // Category color mapping
+        const categoryColors = {
+            'food': '#10B981',      // Emerald - Food
+            'transport': '#06B6D4', // Cyan - Transport
+            'hotel': '#8B5CF6',     // Violet - Hotel
+            'attraction': '#F59E0B',// Amber - Attraction
+            'shopping': '#EC4899',  // Pink - Shopping
+            'flight': '#3B82F6',    // Blue - Flight
+            'other': '#6B7280'      // Gray - Other
+        };
+
+        const borderColor = categoryColors[item.category] || categoryColors['other'];
+
+        itemEl.className = 'item-card bg-white p-3 rounded shadow-sm border border-gray-100 flex justify-between items-center relative overflow-hidden transition-all duration-200';
+        itemEl.style.borderLeft = `4px solid ${borderColor}`;
 
         const totalTWD = Math.round(item.price * item.exchangeRate * (1 + item.taxRate / 100) * (item.quantity || 1));
         const dateStr = formatDate(item.timestamp);
@@ -709,8 +724,12 @@ function renderItems() {
                 </div>
             </div>
             <div class="text-right ml-3">
-                <div class="font-bold text-gray-800">NT$ ${totalTWD}</div>
-                <button class="text-xs text-red-400 hover:text-red-600 mt-1" onclick="deleteItem(${item.id})">刪除</button>
+                <div class="font-bold text-gray-800 tabular-nums">NT$ ${totalTWD.toLocaleString()}</div>
+                <button class="delete-btn text-xs text-red-400 hover:text-red-600 mt-1 transition-colors" onclick="deleteItem(${item.id})" title="刪除此項目">
+                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </button>
             </div>
         `;
         elements.itemsList.appendChild(itemEl);
@@ -820,6 +839,30 @@ function updateBudgetDisplay() {
 
     elements.totalSpent.textContent = `NT$ ${Math.round(totalSpent)}`;
     elements.remainingBudget.textContent = `NT$ ${Math.round(remaining)}`;
+
+    // Update progress bar
+    const progressBar = document.getElementById('budget-progress-bar');
+    const percentageEl = document.getElementById('budget-percentage');
+
+    if (progressBar && percentageEl && budget > 0) {
+        const percentage = Math.min((totalSpent / budget) * 100, 100);
+        const displayPercentage = Math.round((totalSpent / budget) * 100); // Can exceed 100%
+
+        progressBar.style.width = `${percentage}%`;
+        percentageEl.textContent = `${displayPercentage}%`;
+
+        // Color coding based on percentage
+        if (displayPercentage < 70) {
+            progressBar.style.backgroundColor = '#10B981'; // Green - Safe
+            percentageEl.style.color = '#059669';
+        } else if (displayPercentage < 90) {
+            progressBar.style.backgroundColor = '#F59E0B'; // Amber - Warning
+            percentageEl.style.color = '#D97706';
+        } else {
+            progressBar.style.backgroundColor = '#EF4444'; // Red - Danger
+            percentageEl.style.color = '#DC2626';
+        }
+    }
 
     if (remaining < 0) {
         elements.remainingBudget.classList.remove('text-success');
