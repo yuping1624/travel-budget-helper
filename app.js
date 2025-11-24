@@ -169,7 +169,7 @@ const translations = {
         'category-daily': 'Daily',
         'category-transport': 'Transport',
         'category-entertainment': 'Entertainment',
-        'category-accommodation': 'Accommodation',
+        'category-accommodation': 'Stay',
         'category-flight': 'Flight',
         'category-other': 'Other',
         'expense': 'Expense',
