@@ -214,6 +214,19 @@ button:active {
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
+/* Remove shadows from small text buttons */
+button.text-sm,
+button.text-xs,
+.delete-btn {
+    box-shadow: none !important;
+}
+
+button.text-sm:hover,
+button.text-xs:hover,
+.delete-btn:hover {
+    box-shadow: none !important;
+}
+
 /* Primary buttons extra emphasis */
 .bg-primary,
 .bg-success {
