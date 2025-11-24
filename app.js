@@ -809,7 +809,14 @@ function updateBudgetDisplay() {
         return acc + (item.price * item.exchangeRate * (1 + item.taxRate / 100) * (item.quantity || 1));
     }, 0);
 
-    const remaining = state.travelInfo.budget - totalSpent;
+    const budget = state.travelInfo.budget || 0;
+    const remaining = budget - totalSpent;
+
+    // Update footer displays
+    const footerBudgetEl = document.getElementById('footer-budget');
+    if (footerBudgetEl) {
+        footerBudgetEl.textContent = `NT$ ${Math.round(budget)}`;
+    }
 
     elements.totalSpent.textContent = `NT$ ${Math.round(totalSpent)}`;
     elements.remainingBudget.textContent = `NT$ ${Math.round(remaining)}`;
