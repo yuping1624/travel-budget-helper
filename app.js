@@ -345,7 +345,8 @@ window.toggleSection = toggleSection;
     // Update UI language
 function updateLanguageUI() {
     // Update HTML lang attribute for date picker
-    document.documentElement.lang = state.settings.language === 'zh' ? 'zh-TW' : 'en';
+    const lang = state.settings.language === 'zh' ? 'zh-TW' : 'en';
+    document.documentElement.lang = lang;
     
     // Header
     const headerTitle = document.getElementById('header-title');
@@ -361,10 +362,31 @@ function updateLanguageUI() {
     const saveBtn = document.getElementById('save-info-btn');
     if (saveBtn) saveBtn.textContent = t('save');
     
-    // Update labels - they don't have for attributes, so find by position
+    // Update labels and date inputs - they don't have for attributes, so find by position
     const startDateInput = document.getElementById('start-date');
     if (startDateInput) {
-        const startDateLabel = startDateInput.previousElementSibling;
+        // Update date input lang attribute to ensure date picker shows correct language
+        startDateInput.setAttribute('lang', lang);
+        startDateInput.lang = lang;
+        // Force update by cloning and replacing the input
+        const startDateValue = startDateInput.value;
+        const startDateDisabled = startDateInput.disabled;
+        const startDateClone = startDateInput.cloneNode(true);
+        startDateClone.setAttribute('lang', lang);
+        startDateClone.value = startDateValue;
+        startDateClone.disabled = startDateDisabled;
+        startDateInput.parentNode.replaceChild(startDateClone, startDateInput);
+        // Update element reference
+        elements.startDate = startDateClone;
+        // Update travelInfoInputs array
+        elements.travelInfoInputs[0] = startDateClone;
+        // Re-bind event listeners
+        startDateClone.addEventListener('change', () => { 
+            state.travelInfo.startDate = startDateClone.value; 
+            saveData(); 
+        });
+        // Update label
+        const startDateLabel = startDateClone.previousElementSibling;
         if (startDateLabel && startDateLabel.tagName === 'LABEL') {
             startDateLabel.textContent = t('start-date');
         }
@@ -372,7 +394,28 @@ function updateLanguageUI() {
     
     const endDateInput = document.getElementById('end-date');
     if (endDateInput) {
-        const endDateLabel = endDateInput.previousElementSibling;
+        // Update date input lang attribute to ensure date picker shows correct language
+        endDateInput.setAttribute('lang', lang);
+        endDateInput.lang = lang;
+        // Force update by cloning and replacing the input
+        const endDateValue = endDateInput.value;
+        const endDateDisabled = endDateInput.disabled;
+        const endDateClone = endDateInput.cloneNode(true);
+        endDateClone.setAttribute('lang', lang);
+        endDateClone.value = endDateValue;
+        endDateClone.disabled = endDateDisabled;
+        endDateInput.parentNode.replaceChild(endDateClone, endDateInput);
+        // Update element reference
+        elements.endDate = endDateClone;
+        // Update travelInfoInputs array
+        elements.travelInfoInputs[1] = endDateClone;
+        // Re-bind event listeners
+        endDateClone.addEventListener('change', () => { 
+            state.travelInfo.endDate = endDateClone.value; 
+            saveData(); 
+        });
+        // Update label
+        const endDateLabel = endDateClone.previousElementSibling;
         if (endDateLabel && endDateLabel.tagName === 'LABEL') {
             endDateLabel.textContent = t('end-date');
         }
