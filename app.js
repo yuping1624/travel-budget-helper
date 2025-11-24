@@ -350,18 +350,18 @@ function toggleSection(contentId) {
 window.toggleSection = toggleSection;
 
 // Initialization
-    // Update UI language
+// Update UI language
 function updateLanguageUI() {
     // Update HTML lang attribute for date picker
-    const lang = state.settings.language === 'zh' ? 'zh-TW' : 'en';
+    const lang = state.settings.language === 'zh' ? 'zh-TW' : 'en-US';
     document.documentElement.lang = lang;
-    
+
     // Header
     const headerTitle = document.getElementById('header-title');
     if (headerTitle) headerTitle.textContent = t('header-title');
     const langDisplay = document.getElementById('lang-display');
     if (langDisplay) langDisplay.textContent = t('lang-display');
-    
+
     // Travel Info Section
     const travelInfoTitle = document.querySelector('#travel-info h2');
     if (travelInfoTitle) travelInfoTitle.textContent = t('travel-info');
@@ -369,66 +369,34 @@ function updateLanguageUI() {
     if (editBtn) editBtn.textContent = t('edit');
     const saveBtn = document.getElementById('save-info-btn');
     if (saveBtn) saveBtn.textContent = t('save');
-    
-    // Update labels and date inputs - they don't have for attributes, so find by position
+
+    // Update labels and date inputs
     const startDateInput = document.getElementById('start-date');
     if (startDateInput) {
-        // Update date input lang attribute to ensure date picker shows correct language
+        // Update date input lang attribute
         startDateInput.setAttribute('lang', lang);
         startDateInput.lang = lang;
-        // Force update by cloning and replacing the input
-        const startDateValue = startDateInput.value;
-        const startDateDisabled = startDateInput.disabled;
-        const startDateClone = startDateInput.cloneNode(true);
-        startDateClone.setAttribute('lang', lang);
-        startDateClone.value = startDateValue;
-        startDateClone.disabled = startDateDisabled;
-        startDateInput.parentNode.replaceChild(startDateClone, startDateInput);
-        // Update element reference
-        elements.startDate = startDateClone;
-        // Update travelInfoInputs array
-        elements.travelInfoInputs[0] = startDateClone;
-        // Re-bind event listeners
-        startDateClone.addEventListener('change', () => { 
-            state.travelInfo.startDate = startDateClone.value; 
-            saveData(); 
-        });
+
         // Update label
-        const startDateLabel = startDateClone.previousElementSibling;
+        const startDateLabel = startDateInput.previousElementSibling;
         if (startDateLabel && startDateLabel.tagName === 'LABEL') {
             startDateLabel.textContent = t('start-date');
         }
     }
-    
+
     const endDateInput = document.getElementById('end-date');
     if (endDateInput) {
-        // Update date input lang attribute to ensure date picker shows correct language
+        // Update date input lang attribute
         endDateInput.setAttribute('lang', lang);
         endDateInput.lang = lang;
-        // Force update by cloning and replacing the input
-        const endDateValue = endDateInput.value;
-        const endDateDisabled = endDateInput.disabled;
-        const endDateClone = endDateInput.cloneNode(true);
-        endDateClone.setAttribute('lang', lang);
-        endDateClone.value = endDateValue;
-        endDateClone.disabled = endDateDisabled;
-        endDateInput.parentNode.replaceChild(endDateClone, endDateInput);
-        // Update element reference
-        elements.endDate = endDateClone;
-        // Update travelInfoInputs array
-        elements.travelInfoInputs[1] = endDateClone;
-        // Re-bind event listeners
-        endDateClone.addEventListener('change', () => { 
-            state.travelInfo.endDate = endDateClone.value; 
-            saveData(); 
-        });
+
         // Update label
-        const endDateLabel = endDateClone.previousElementSibling;
+        const endDateLabel = endDateInput.previousElementSibling;
         if (endDateLabel && endDateLabel.tagName === 'LABEL') {
             endDateLabel.textContent = t('end-date');
         }
     }
-    
+
     const locationInput = document.getElementById('location');
     if (locationInput) {
         const locationLabel = locationInput.previousElementSibling;
@@ -437,7 +405,7 @@ function updateLanguageUI() {
         }
         locationInput.placeholder = t('location-placeholder');
     }
-    
+
     const budgetInput = document.getElementById('total-budget');
     if (budgetInput) {
         const budgetLabel = budgetInput.previousElementSibling;
@@ -445,11 +413,11 @@ function updateLanguageUI() {
             budgetLabel.textContent = t('total-budget');
         }
     }
-    
+
     // Exchange Rate Section
     const exchangeRateTitle = document.querySelector('#exchange-rate h2');
     if (exchangeRateTitle) exchangeRateTitle.textContent = t('exchange-rate');
-    
+
     // Update currency label
     const currencySelect = document.getElementById('currency-select');
     if (currencySelect) {
@@ -458,7 +426,7 @@ function updateLanguageUI() {
             currencyLabel.textContent = t('currency');
         }
     }
-    
+
     // Update rate label - need to find the label before the input-outline div
     const exchangeRateInput = document.getElementById('exchange-rate-input');
     if (exchangeRateInput) {
@@ -470,10 +438,10 @@ function updateLanguageUI() {
             }
         }
     }
-    
+
     const fetchRateBtn = document.getElementById('fetch-rate-btn');
     if (fetchRateBtn) fetchRateBtn.textContent = t('update-rate');
-    
+
     // Update tax rate label
     const taxRateInput = document.getElementById('tax-rate-input');
     if (taxRateInput) {
@@ -490,12 +458,12 @@ function updateLanguageUI() {
             }
         }
     }
-    
+
     const rateApiBtn = document.getElementById('rate-api-btn');
     if (rateApiBtn) rateApiBtn.textContent = t('rate-mode-realtime');
     const rateManualBtn = document.getElementById('rate-manual-btn');
     if (rateManualBtn) rateManualBtn.textContent = t('rate-mode-manual');
-    
+
     // Update currency select options (currencySelect already defined above)
     if (currencySelect) {
         const currencies = ['TWD', 'JPY', 'USD', 'EUR', 'GBP', 'AUD', 'THB', 'CNY', 'KRW', 'CAD'];
@@ -512,13 +480,13 @@ function updateLanguageUI() {
             }
         });
     }
-    
+
     // Mode Switcher
     const cartModeBtn = document.getElementById('mode-cart-btn');
     if (cartModeBtn) cartModeBtn.textContent = t('cart-mode');
     const directModeBtn = document.getElementById('mode-direct-btn');
     if (directModeBtn) directModeBtn.textContent = t('direct-mode');
-    
+
     // Cart Input - Update category buttons
     const cartCategoryButtons = document.querySelectorAll('#cart-input-panel .category-btn span.text-xs');
     cartCategoryButtons.forEach(btn => {
@@ -528,7 +496,7 @@ function updateLanguageUI() {
             btn.textContent = t(`category-${category}`);
         }
     });
-    
+
     const cartTaxLabel = document.querySelector('label[for="cart-tax-toggle"]');
     if (cartTaxLabel) cartTaxLabel.textContent = t('include-tax');
     const itemPriceInput = document.getElementById('item-price');
@@ -541,7 +509,7 @@ function updateLanguageUI() {
     }
     const addItemBtn = document.getElementById('add-item-btn');
     if (addItemBtn) addItemBtn.innerHTML = `<span class="text-xl mr-2">+</span> ${t('add-to-cart')}`;
-    
+
     // Direct Input - Update category buttons
     const directCategoryButtons = document.querySelectorAll('#direct-input-panel .category-btn span.text-xs');
     directCategoryButtons.forEach(btn => {
@@ -551,7 +519,7 @@ function updateLanguageUI() {
             btn.textContent = t(`category-${category}`);
         }
     });
-    
+
     const directTaxLabel = document.querySelector('label[for="direct-tax-toggle"]');
     if (directTaxLabel) directTaxLabel.textContent = t('include-tax');
     const directPriceInput = document.getElementById('direct-price');
@@ -562,17 +530,17 @@ function updateLanguageUI() {
     }
     const addExpenseBtn = document.getElementById('add-expense-btn');
     if (addExpenseBtn) addExpenseBtn.textContent = t('confirm-expense');
-    
+
     // Cart Staging
     const cartListTitle = document.querySelector('#cart-staging-area h3 span');
     if (cartListTitle) cartListTitle.textContent = t('cart-list');
-    
+
     // Update initial "cart empty" message if it exists
     const cartEmptyMsg = document.querySelector('#cart-items-list .text-center.text-gray-400');
     if (cartEmptyMsg && cartEmptyMsg.textContent.includes('購物車是空的')) {
         cartEmptyMsg.textContent = t('cart-empty');
     }
-    
+
     // Update subtotal label - find directly in cart staging area
     const cartStagingArea = document.getElementById('cart-staging-area');
     if (cartStagingArea) {
@@ -588,7 +556,7 @@ function updateLanguageUI() {
     }
     const checkoutBtn = document.getElementById('checkout-btn');
     if (checkoutBtn) checkoutBtn.textContent = t('checkout');
-    
+
     // Statistics
     const statsTitle = document.querySelector('#stats-section h3');
     if (statsTitle) statsTitle.textContent = t('stats-overview');
@@ -596,17 +564,17 @@ function updateLanguageUI() {
     if (dailyAvgLabel) dailyAvgLabel.textContent = t('daily-average');
     const topExpenseLabel = document.querySelector('#stats-section .text-xs.text-cyan-600');
     if (topExpenseLabel) topExpenseLabel.textContent = t('top-expense');
-    
+
     // List View
     const listViewTitle = document.querySelector('#list-view h3');
     if (listViewTitle) listViewTitle.textContent = t('expense-details');
-    
+
     // Update initial "no items" message if it exists
     const noItemsMsg = elements.itemsList.querySelector('.text-center.text-gray-400');
     if (noItemsMsg && noItemsMsg.textContent.includes('尚未新增')) {
         noItemsMsg.textContent = t('no-items');
     }
-    
+
     const showMoreBtn = document.getElementById('show-more-btn');
     if (showMoreBtn && !showMoreBtn.classList.contains('hidden')) {
         const items = Array.from(elements.itemsList.children).filter(el => !el.classList.contains('item-fade-out'));
@@ -619,7 +587,7 @@ function updateLanguageUI() {
     } else if (showMoreBtn && showMoreBtn.textContent.includes('顯示更多')) {
         showMoreBtn.textContent = t('show-more');
     }
-    
+
     // Footer
     const budgetUsageLabel = document.querySelector('footer .text-xs.text-gray-500');
     if (budgetUsageLabel) budgetUsageLabel.textContent = t('budget-usage');
@@ -631,7 +599,7 @@ function updateLanguageUI() {
     }
     const budgetWarning = document.getElementById('budget-warning');
     if (budgetWarning) budgetWarning.textContent = t('budget-warning');
-    
+
     // Modal - Always update to ensure correct language
     const modalTitle = document.getElementById('modal-title');
     if (modalTitle) {
@@ -650,7 +618,15 @@ function updateLanguageUI() {
         // Always update cancel button
         modalCancelBtn.textContent = t('cancel');
     }
-    
+
+    // Update date displays if they are in text mode (disabled/view mode)
+    if (elements.startDate && elements.startDate.type === 'text' && elements.startDate.dataset.actualValue) {
+        elements.startDate.value = formatDateForDisplay(elements.startDate.dataset.actualValue);
+    }
+    if (elements.endDate && elements.endDate.type === 'text' && elements.endDate.dataset.actualValue) {
+        elements.endDate.value = formatDateForDisplay(elements.endDate.dataset.actualValue);
+    }
+
     // Re-render items to update translations
     render();
 }
@@ -666,6 +642,8 @@ function switchLanguage() {
 function init() {
     console.log('Budget Master Initialized');
     loadData();
+    // Ensure inputs are in correct display mode (text mode for dates)
+    toggleTravelInfoEdit(false);
     setupEventListeners();
     restoreCollapsedStates();
     updateLanguageUI();
@@ -712,7 +690,7 @@ function loadData() {
         elements.currencySelect.value = state.settings.currency;
         elements.exchangeRateInput.value = state.settings.exchangeRate;
         elements.taxRateInput.value = state.settings.taxRate;
-        
+
         // If TWD is selected, disable exchange rate input
         if (state.settings.currency === 'TWD') {
             elements.exchangeRateInput.disabled = true;
@@ -743,10 +721,32 @@ function toggleTravelInfoEdit(isEditing) {
             // Enable editing - remove disabled styles, add normal styles
             input.classList.remove('disabled:bg-gray-50', 'disabled:text-gray-500');
             input.classList.add('bg-white', 'text-gray-800');
+            // Restore date input type for date inputs
+            if (input.id === 'start-date' || input.id === 'end-date') {
+                // Restore value FIRST to ensure it's valid for type="date"
+                if (input.dataset.actualValue) {
+                    input.value = input.dataset.actualValue;
+                }
+                // Force update language attribute to ensure native picker renders correctly
+                const lang = state.settings.language === 'zh' ? 'zh-TW' : 'en-US';
+                input.setAttribute('lang', lang);
+
+                input.type = 'date';
+            }
         } else {
             // Disable editing - add disabled styles, remove normal styles
             input.classList.add('disabled:bg-gray-50', 'disabled:text-gray-500');
             input.classList.remove('bg-white', 'text-gray-800');
+            // For date inputs, convert to text and format the display
+            if (input.id === 'start-date' || input.id === 'end-date') {
+                const dateValue = input.value;
+                if (dateValue) {
+                    input.type = 'text';
+                    input.value = formatDateForDisplay(dateValue);
+                    // Store the original value in a data attribute
+                    input.dataset.actualValue = dateValue;
+                }
+            }
         }
     });
 
@@ -958,7 +958,7 @@ function setupEventListeners() {
 
 async function fetchExchangeRate() {
     const currency = state.settings.currency;
-    
+
     // If TWD is selected, set rate to 1 and return
     if (currency === 'TWD') {
         state.settings.exchangeRate = 1;
@@ -968,7 +968,7 @@ async function fetchExchangeRate() {
         updateDirectTwdPreview();
         return;
     }
-    
+
     const btn = document.getElementById('fetch-rate-btn');
     const originalText = btn.textContent;
 
@@ -1146,6 +1146,30 @@ function render() {
     // Update previews after render
     updateCartTwdPreview();
     updateDirectTwdPreview();
+}
+
+// Format date for display in travel info (YYYY-MM-DD -> localized format)
+function formatDateForDisplay(dateStr) {
+    if (!dateStr) return '';
+    try {
+        const date = new Date(dateStr + 'T00:00:00'); // Add time to avoid timezone issues
+        if (isNaN(date.getTime())) return dateStr;
+
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+
+        if (state.settings.language === 'zh') {
+            return `${year}年${month}月${day}日`;
+        } else {
+            // English format: Month Day, Year (e.g., "Jan 15, 2024")
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${monthNames[month - 1]} ${day}, ${year}`;
+        }
+    } catch (e) {
+        return dateStr;
+    }
 }
 
 function formatDate(timestamp) {
@@ -1438,7 +1462,7 @@ function renderCart() {
 
     elements.cartSubtotal.textContent = `NT$ ${subtotal}`;
     elements.cartCount.textContent = `(${state.cartItems.length})`;
-    
+
     // Update subtotal label text after rendering
     const cartStagingArea = document.getElementById('cart-staging-area');
     if (cartStagingArea) {
