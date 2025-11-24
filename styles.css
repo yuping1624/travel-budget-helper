@@ -1,0 +1,22 @@
+/* Custom styles to supplement Tailwind */
+
+body {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.category-btn.active {
+    background-color: #e0f2fe; /* sky-100 */
+    border-color: #0ea5e9; /* sky-500 */
+    color: #0284c7; /* sky-600 */
+}
