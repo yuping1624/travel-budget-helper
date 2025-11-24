@@ -25,7 +25,7 @@ const state = {
 // Translation object
 const translations = {
     zh: {
-        'header-title': 'Budget Master',
+        'header-title': '旅行預算小幫手',
         'lang-display': '中文',
         'travel-info': '旅程資訊',
         'edit': '編輯',
@@ -348,6 +348,8 @@ function updateLanguageUI() {
     document.documentElement.lang = state.settings.language === 'zh' ? 'zh-TW' : 'en';
     
     // Header
+    const headerTitle = document.getElementById('header-title');
+    if (headerTitle) headerTitle.textContent = t('header-title');
     const langDisplay = document.getElementById('lang-display');
     if (langDisplay) langDisplay.textContent = t('lang-display');
     
@@ -1184,7 +1186,8 @@ function renderItems() {
 
         if (item.type === 'cart') {
             iconHtml = `<div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-xl">${item.icon || '🛒'}</div>`;
-            titleHtml = `<div class="font-medium text-gray-800">${item.name}</div>`;
+            // Use getCategoryName to ensure name updates when language changes
+            titleHtml = `<div class="font-medium text-gray-800">${getCategoryName(item.category)}</div>`;
             descHtml = `<div class="text-xs text-gray-500">${item.currency} ${item.price} x ${item.quantity}</div>`;
         } else {
             iconHtml = `<div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center text-xl">${item.icon || '💰'}</div>`;
@@ -1370,7 +1373,7 @@ function renderCart() {
             <div class="flex items-center space-x-2">
                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center border text-lg">${item.icon || '🛒'}</div>
                 <div>
-                    <div class="font-medium text-gray-700">${item.name}</div>
+                    <div class="font-medium text-gray-700">${getCategoryName(item.category)}</div>
                     <div class="text-xs text-gray-400">${item.currency} ${item.price} x ${item.quantity}</div>
                 </div>
             </div>
