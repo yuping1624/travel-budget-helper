@@ -24,7 +24,8 @@ const state = {
 // UI State (Non-persistent)
 const uiState = {
     cartActiveCategory: null,
-    directActiveCategory: null
+    directActiveCategory: null,
+    itemsExpanded: false // Track if items list is expanded
 };
 
 // Debug helper
@@ -333,6 +334,12 @@ function setupEventListeners() {
 
     // Checkout Cart
     elements.checkoutBtn.addEventListener('click', (e) => { e.preventDefault(); checkoutCart(); });
+
+    // Show More/Less button
+    elements.showMoreBtn.addEventListener('click', () => {
+        uiState.itemsExpanded = !uiState.itemsExpanded;
+        renderItems();
+    });
 }
 
 async function fetchExchangeRate() {
@@ -517,19 +524,40 @@ function render() {
     updateDirectTwdPreview();
 }
 
+function formatDate(timestamp) {
+    if (!timestamp) return '';
+    try {
+        const date = new Date(timestamp);
+        if (isNaN(date.getTime())) return '';
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}/${month}/${day}`;
+    } catch (e) {
+        return '';
+    }
+}
+
 function renderItems() {
     elements.itemsList.innerHTML = '';
 
     if (state.items.length === 0) {
         elements.itemsList.innerHTML = '<div class="text-center text-gray-400 py-8 text-sm">尚未新增任何項目</div>';
+        elements.showMoreBtn.classList.add('hidden');
         return;
     }
 
-    state.items.forEach(item => {
+    // Determine how many items to show
+    const maxVisible = 5;
+    const shouldShowMore = state.items.length > maxVisible;
+    const itemsToShow = uiState.itemsExpanded ? state.items : state.items.slice(0, maxVisible);
+
+    itemsToShow.forEach(item => {
         const itemEl = document.createElement('div');
         itemEl.className = 'bg-white p-3 rounded shadow-sm border border-gray-100 flex justify-between items-center';
 
         const totalTWD = Math.round(item.price * item.exchangeRate * (1 + item.taxRate / 100) * (item.quantity || 1));
+        const dateStr = formatDate(item.timestamp);
 
         let iconHtml = '';
         let titleHtml = '';
@@ -546,20 +574,29 @@ function renderItems() {
         }
 
         itemEl.innerHTML = `
-            <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-3 flex-1">
                 ${iconHtml}
-                <div>
+                <div class="flex-1">
                     ${titleHtml}
                     ${descHtml}
+                    ${dateStr ? `<div class="text-xs text-gray-400 mt-0.5">${dateStr}</div>` : ''}
                 </div>
             </div>
-            <div class="text-right">
+            <div class="text-right ml-3">
                 <div class="font-bold text-gray-800">NT$ ${totalTWD}</div>
                 <button class="text-xs text-red-400 hover:text-red-600 mt-1" onclick="deleteItem(${item.id})">刪除</button>
             </div>
         `;
         elements.itemsList.appendChild(itemEl);
     });
+
+    // Show/hide "Show More" button
+    if (shouldShowMore) {
+        elements.showMoreBtn.classList.remove('hidden');
+        elements.showMoreBtn.textContent = uiState.itemsExpanded ? '顯示較少...' : `顯示更多... (${state.items.length - maxVisible} 筆)`;
+    } else {
+        elements.showMoreBtn.classList.add('hidden');
+    }
 }
 
 function getCategoryName(cat) {
