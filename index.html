@@ -33,7 +33,12 @@
 
         <!-- Header -->
         <header class="bg-primary text-white p-4 sticky top-0 z-10 shadow-md">
-            <h1 class="text-xl font-bold text-center">Budget Master</h1>
+            <div class="flex justify-between items-center">
+                <h1 id="header-title" class="text-xl font-bold flex-1 text-center">Budget Master</h1>
+                <button type="button" id="lang-toggle-btn" class="text-sm bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded transition" title="切換語言 / Switch Language">
+                    <span id="lang-display">中文</span>
+                </button>
+            </div>
         </header>
 
         <!-- Main Content -->
@@ -113,6 +118,7 @@
                             <label class="block text-xs text-gray-500 mb-1">幣別</label>
                             <select id="currency-select"
                                 class="w-full border rounded p-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                <option value="TWD">TWD 台幣</option>
                                 <option value="JPY">JPY 日幣</option>
                                 <option value="USD">USD 美金</option>
                                 <option value="EUR">EUR 歐元</option>

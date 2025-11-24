@@ -15,11 +15,177 @@ const state = {
         exchangeRate: 0.21, // Default example
         taxRate: 0, // Default 0%
         mode: 'cart', // 'cart' or 'direct'
-        rateMode: 'manual' // 'api' or 'manual'
+        rateMode: 'manual', // 'api' or 'manual'
+        language: localStorage.getItem('language') || 'zh' // 'zh' or 'en'
     },
     items: [],
     cartItems: [] // Staging area for cart mode
 };
+
+// Translation object
+const translations = {
+    zh: {
+        'header-title': 'Budget Master',
+        'lang-display': '中文',
+        'travel-info': '旅程資訊',
+        'edit': '編輯',
+        'save': '儲存',
+        'start-date': '開始日期',
+        'end-date': '結束日期',
+        'location': '地點',
+        'location-placeholder': '例如：東京',
+        'total-budget': '總預算 (TWD)',
+        'exchange-rate': '匯率設定',
+        'currency': '幣別',
+        'rate-label': '匯率 (1 外幣 = ? 台幣)',
+        'update-rate': '更新匯率',
+        'updating': '更新中...',
+        'tax-rate': '稅率 (%)',
+        'rate-mode-realtime': '即時',
+        'rate-mode-manual': '手動',
+        'cart-mode': '🛒 購物車模式',
+        'direct-mode': '📝 直接記帳',
+        'amount-foreign': '金額 (外幣)',
+        'quantity': '數量',
+        'include-tax': '含稅計算',
+        'preview': '預估',
+        'add-to-cart': '加入購物車',
+        'confirm-expense': '確認記帳',
+        'cart-list': '🛒 購物車清單',
+        'subtotal': '小計 (預估)',
+        'checkout': '確認結帳',
+        'stats-overview': '消費概覽',
+        'daily-average': '平均每日',
+        'top-expense': '最大開支',
+        'expense-details': '消費明細',
+        'no-items': '尚未新增任何項目',
+        'show-more': '顯示更多...',
+        'show-less': '顯示較少...',
+        'budget-usage': '預算使用',
+        'budget': '預算',
+        'total-spent': '總花費',
+        'remaining': '剩餘預算',
+        'budget-warning': '⚠️ 已超支！請注意控制預算，再買就要剁手手',
+        'success': '成功',
+        'error': '錯誤',
+        'confirm': '確定',
+        'cancel': '取消',
+        'rate-updated': '已更新匯率',
+        'rate-update-failed': '匯率更新失敗，請檢查網路或稍後再試',
+        'select-category-price': '請選擇商品類別並輸入價格與數量',
+        'select-category-amount': '請選擇類別並輸入金額',
+        'cart-empty': '購物車是空的',
+        'confirm-delete': '確認刪除',
+        'confirm-delete-msg': '確定要刪除此項目嗎？',
+        'confirm-checkout': '確認結帳',
+        'confirm-checkout-msg': '確定要結帳',
+        'items': '個項目',
+        'checkout-success': '結帳完成！',
+        'tip': '提示',
+        'category-food': '飲食',
+        'category-groceries': '食材',
+        'category-daily': '日用品',
+        'category-transport': '交通',
+        'category-entertainment': '娛樂',
+        'category-accommodation': '住宿',
+        'category-flight': '機票',
+        'category-other': '其他',
+        'expense': '消費',
+        'currency-twd': '台幣',
+        'currency-jpy': '日幣',
+        'currency-usd': '美金',
+        'currency-eur': '歐元',
+        'currency-krw': '韓元',
+        'currency-cad': '加幣',
+        'just-now': '剛剛',
+        'minutes-ago': '分鐘前',
+        'hours-ago': '小時前',
+        'hour-ago': '小時前'
+    },
+    en: {
+        'header-title': 'Budget Master',
+        'lang-display': 'EN',
+        'travel-info': 'Travel Info',
+        'edit': 'Edit',
+        'save': 'Save',
+        'start-date': 'Start Date',
+        'end-date': 'End Date',
+        'location': 'Location',
+        'location-placeholder': 'e.g., Tokyo',
+        'total-budget': 'Total Budget (TWD)',
+        'exchange-rate': 'Exchange Rate',
+        'currency': 'Currency',
+        'rate-label': 'Rate (1 Foreign = ? TWD)',
+        'update-rate': 'Update Rate',
+        'updating': 'Updating...',
+        'tax-rate': 'Tax Rate (%)',
+        'rate-mode-realtime': 'Realtime',
+        'rate-mode-manual': 'Manual',
+        'cart-mode': '🛒 Cart Mode',
+        'direct-mode': '📝 Direct Entry',
+        'amount-foreign': 'Amount (Foreign)',
+        'quantity': 'Quantity',
+        'include-tax': 'Include Tax',
+        'preview': 'Estimate',
+        'add-to-cart': 'Add to Cart',
+        'confirm-expense': 'Confirm Entry',
+        'cart-list': '🛒 Cart List',
+        'subtotal': 'Subtotal (Est.)',
+        'checkout': 'Checkout',
+        'stats-overview': 'Expense Overview',
+        'daily-average': 'Daily Average',
+        'top-expense': 'Top Expense',
+        'expense-details': 'Expense Details',
+        'no-items': 'No items yet',
+        'show-more': 'Show More...',
+        'show-less': 'Show Less...',
+        'budget-usage': 'Budget Usage',
+        'budget': 'Budget',
+        'total-spent': 'Total Spent',
+        'remaining': 'Remaining',
+        'budget-warning': '⚠️ Over Budget! Please control your spending',
+        'success': 'Success',
+        'error': 'Error',
+        'confirm': 'Confirm',
+        'cancel': 'Cancel',
+        'rate-updated': 'Rate updated',
+        'rate-update-failed': 'Failed to update rate, please check network or try again',
+        'select-category-price': 'Please select category and enter price & quantity',
+        'select-category-amount': 'Please select category and enter amount',
+        'cart-empty': 'Cart is empty',
+        'confirm-delete': 'Confirm Delete',
+        'confirm-delete-msg': 'Are you sure you want to delete this item?',
+        'confirm-checkout': 'Confirm Checkout',
+        'confirm-checkout-msg': 'Are you sure you want to checkout',
+        'items': 'items',
+        'checkout-success': 'Checkout completed!',
+        'tip': 'Tip',
+        'category-food': 'Food',
+        'category-groceries': 'Groceries',
+        'category-daily': 'Daily',
+        'category-transport': 'Transport',
+        'category-entertainment': 'Entertainment',
+        'category-accommodation': 'Accommodation',
+        'category-flight': 'Flight',
+        'category-other': 'Other',
+        'expense': 'Expense',
+        'currency-twd': 'TWD',
+        'currency-jpy': 'JPY',
+        'currency-usd': 'USD',
+        'currency-eur': 'EUR',
+        'currency-krw': 'KRW',
+        'currency-cad': 'CAD',
+        'just-now': 'Just now',
+        'minutes-ago': 'minutes ago',
+        'hours-ago': 'hours ago',
+        'hour-ago': 'hour ago'
+    }
+};
+
+// Get translation
+function t(key) {
+    return translations[state.settings.language][key] || key;
+}
 
 // UI State (Non-persistent)
 const uiState = {
@@ -130,10 +296,12 @@ function showModal(title, message, isConfirm = false) {
         const newConfirmBtn = elements.modalConfirmBtn.cloneNode(true);
         elements.modalConfirmBtn.parentNode.replaceChild(newConfirmBtn, elements.modalConfirmBtn);
         elements.modalConfirmBtn = newConfirmBtn;
+        elements.modalConfirmBtn.textContent = t('confirm'); // Update button text
 
         const newCancelBtn = elements.modalCancelBtn.cloneNode(true);
         elements.modalCancelBtn.parentNode.replaceChild(newCancelBtn, elements.modalCancelBtn);
         elements.modalCancelBtn = newCancelBtn;
+        elements.modalCancelBtn.textContent = t('cancel'); // Update button text
 
         elements.modalConfirmBtn.addEventListener('click', handleConfirm);
         elements.modalCancelBtn.addEventListener('click', handleCancel);
@@ -174,11 +342,280 @@ function toggleSection(contentId) {
 window.toggleSection = toggleSection;
 
 // Initialization
+    // Update UI language
+function updateLanguageUI() {
+    // Update HTML lang attribute for date picker
+    document.documentElement.lang = state.settings.language === 'zh' ? 'zh-TW' : 'en';
+    
+    // Header
+    const langDisplay = document.getElementById('lang-display');
+    if (langDisplay) langDisplay.textContent = t('lang-display');
+    
+    // Travel Info Section
+    const travelInfoTitle = document.querySelector('#travel-info h2');
+    if (travelInfoTitle) travelInfoTitle.textContent = t('travel-info');
+    const editBtn = document.getElementById('edit-info-btn');
+    if (editBtn) editBtn.textContent = t('edit');
+    const saveBtn = document.getElementById('save-info-btn');
+    if (saveBtn) saveBtn.textContent = t('save');
+    
+    // Update labels - they don't have for attributes, so find by position
+    const startDateInput = document.getElementById('start-date');
+    if (startDateInput) {
+        const startDateLabel = startDateInput.previousElementSibling;
+        if (startDateLabel && startDateLabel.tagName === 'LABEL') {
+            startDateLabel.textContent = t('start-date');
+        }
+    }
+    
+    const endDateInput = document.getElementById('end-date');
+    if (endDateInput) {
+        const endDateLabel = endDateInput.previousElementSibling;
+        if (endDateLabel && endDateLabel.tagName === 'LABEL') {
+            endDateLabel.textContent = t('end-date');
+        }
+    }
+    
+    const locationInput = document.getElementById('location');
+    if (locationInput) {
+        const locationLabel = locationInput.previousElementSibling;
+        if (locationLabel && locationLabel.tagName === 'LABEL') {
+            locationLabel.textContent = t('location');
+        }
+        locationInput.placeholder = t('location-placeholder');
+    }
+    
+    const budgetInput = document.getElementById('total-budget');
+    if (budgetInput) {
+        const budgetLabel = budgetInput.previousElementSibling;
+        if (budgetLabel && budgetLabel.tagName === 'LABEL') {
+            budgetLabel.textContent = t('total-budget');
+        }
+    }
+    
+    // Exchange Rate Section
+    const exchangeRateTitle = document.querySelector('#exchange-rate h2');
+    if (exchangeRateTitle) exchangeRateTitle.textContent = t('exchange-rate');
+    
+    // Update currency label
+    const currencySelect = document.getElementById('currency-select');
+    if (currencySelect) {
+        const currencyLabel = currencySelect.previousElementSibling;
+        if (currencyLabel && currencyLabel.tagName === 'LABEL') {
+            currencyLabel.textContent = t('currency');
+        }
+    }
+    
+    // Update rate label - need to find the label before the input-outline div
+    const exchangeRateInput = document.getElementById('exchange-rate-input');
+    if (exchangeRateInput) {
+        const exchangeRateInputContainer = exchangeRateInput.closest('.input-outline');
+        if (exchangeRateInputContainer) {
+            const rateLabel = exchangeRateInputContainer.previousElementSibling;
+            if (rateLabel && rateLabel.tagName === 'LABEL') {
+                rateLabel.textContent = t('rate-label');
+            }
+        }
+    }
+    
+    const fetchRateBtn = document.getElementById('fetch-rate-btn');
+    if (fetchRateBtn) fetchRateBtn.textContent = t('update-rate');
+    
+    // Update tax rate label
+    const taxRateInput = document.getElementById('tax-rate-input');
+    if (taxRateInput) {
+        const taxRateInputContainer = taxRateInput.closest('.input-outline');
+        if (taxRateInputContainer) {
+            // The label is inside the parent div, before the input-outline div
+            const taxRateContainer = taxRateInputContainer.parentElement;
+            if (taxRateContainer) {
+                // Find label inside the container (it's the first child)
+                const taxRateLabel = taxRateContainer.querySelector('label');
+                if (taxRateLabel) {
+                    taxRateLabel.textContent = t('tax-rate');
+                }
+            }
+        }
+    }
+    
+    const rateApiBtn = document.getElementById('rate-api-btn');
+    if (rateApiBtn) rateApiBtn.textContent = t('rate-mode-realtime');
+    const rateManualBtn = document.getElementById('rate-manual-btn');
+    if (rateManualBtn) rateManualBtn.textContent = t('rate-mode-manual');
+    
+    // Update currency select options (currencySelect already defined above)
+    if (currencySelect) {
+        const currencies = ['TWD', 'JPY', 'USD', 'EUR', 'KRW', 'CAD'];
+        currencies.forEach(currency => {
+            const option = currencySelect.querySelector(`option[value="${currency}"]`);
+            if (option) {
+                // For English, just show the currency code (e.g., "USD")
+                // For Chinese, show code + name (e.g., "USD 美金")
+                if (state.settings.language === 'en') {
+                    option.textContent = currency;
+                } else {
+                    option.textContent = `${currency} ${t(`currency-${currency.toLowerCase()}`)}`;
+                }
+            }
+        });
+    }
+    
+    // Mode Switcher
+    const cartModeBtn = document.getElementById('mode-cart-btn');
+    if (cartModeBtn) cartModeBtn.textContent = t('cart-mode');
+    const directModeBtn = document.getElementById('mode-direct-btn');
+    if (directModeBtn) directModeBtn.textContent = t('direct-mode');
+    
+    // Cart Input - Update category buttons
+    const cartCategoryButtons = document.querySelectorAll('#cart-input-panel .category-btn span.text-xs');
+    cartCategoryButtons.forEach(btn => {
+        const categoryBtn = btn.closest('.category-btn');
+        if (categoryBtn) {
+            const category = categoryBtn.dataset.category;
+            btn.textContent = t(`category-${category}`);
+        }
+    });
+    
+    const cartTaxLabel = document.querySelector('label[for="cart-tax-toggle"]');
+    if (cartTaxLabel) cartTaxLabel.textContent = t('include-tax');
+    const itemPriceInput = document.getElementById('item-price');
+    if (itemPriceInput) itemPriceInput.placeholder = t('amount-foreign');
+    const itemQuantityInput = document.getElementById('item-quantity');
+    if (itemQuantityInput) itemQuantityInput.placeholder = t('quantity');
+    const cartPreview = document.getElementById('cart-twd-preview');
+    if (cartPreview && cartPreview.previousSibling) {
+        cartPreview.previousSibling.textContent = t('preview') + ': ';
+    }
+    const addItemBtn = document.getElementById('add-item-btn');
+    if (addItemBtn) addItemBtn.innerHTML = `<span class="text-xl mr-2">+</span> ${t('add-to-cart')}`;
+    
+    // Direct Input - Update category buttons
+    const directCategoryButtons = document.querySelectorAll('#direct-input-panel .category-btn span.text-xs');
+    directCategoryButtons.forEach(btn => {
+        const categoryBtn = btn.closest('.category-btn');
+        if (categoryBtn) {
+            const category = categoryBtn.dataset.category;
+            btn.textContent = t(`category-${category}`);
+        }
+    });
+    
+    const directTaxLabel = document.querySelector('label[for="direct-tax-toggle"]');
+    if (directTaxLabel) directTaxLabel.textContent = t('include-tax');
+    const directPriceInput = document.getElementById('direct-price');
+    if (directPriceInput) directPriceInput.placeholder = t('amount-foreign');
+    const directPreview = document.getElementById('direct-twd-preview');
+    if (directPreview && directPreview.previousSibling) {
+        directPreview.previousSibling.textContent = t('preview') + ': ';
+    }
+    const addExpenseBtn = document.getElementById('add-expense-btn');
+    if (addExpenseBtn) addExpenseBtn.textContent = t('confirm-expense');
+    
+    // Cart Staging
+    const cartListTitle = document.querySelector('#cart-staging-area h3 span');
+    if (cartListTitle) cartListTitle.textContent = t('cart-list');
+    
+    // Update initial "cart empty" message if it exists
+    const cartEmptyMsg = document.querySelector('#cart-items-list .text-center.text-gray-400');
+    if (cartEmptyMsg && cartEmptyMsg.textContent.includes('購物車是空的')) {
+        cartEmptyMsg.textContent = t('cart-empty');
+    }
+    
+    // Update subtotal label - find directly in cart staging area
+    const cartStagingArea = document.getElementById('cart-staging-area');
+    if (cartStagingArea) {
+        // Find all spans with text-sm and text-gray-600 classes
+        const allSpans = cartStagingArea.querySelectorAll('span.text-sm.text-gray-600');
+        allSpans.forEach(span => {
+            // Check if this span contains the subtotal text
+            const text = span.textContent.trim();
+            if (text === '小計 (預估)' || text === 'Subtotal (Est.)' || text.includes('小計') || text.includes('Subtotal')) {
+                span.textContent = t('subtotal');
+            }
+        });
+    }
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (checkoutBtn) checkoutBtn.textContent = t('checkout');
+    
+    // Statistics
+    const statsTitle = document.querySelector('#stats-section h3');
+    if (statsTitle) statsTitle.textContent = t('stats-overview');
+    const dailyAvgLabel = document.querySelector('#stats-section .text-xs.text-teal-600');
+    if (dailyAvgLabel) dailyAvgLabel.textContent = t('daily-average');
+    const topExpenseLabel = document.querySelector('#stats-section .text-xs.text-cyan-600');
+    if (topExpenseLabel) topExpenseLabel.textContent = t('top-expense');
+    
+    // List View
+    const listViewTitle = document.querySelector('#list-view h3');
+    if (listViewTitle) listViewTitle.textContent = t('expense-details');
+    
+    // Update initial "no items" message if it exists
+    const noItemsMsg = elements.itemsList.querySelector('.text-center.text-gray-400');
+    if (noItemsMsg && noItemsMsg.textContent.includes('尚未新增')) {
+        noItemsMsg.textContent = t('no-items');
+    }
+    
+    const showMoreBtn = document.getElementById('show-more-btn');
+    if (showMoreBtn && !showMoreBtn.classList.contains('hidden')) {
+        const items = Array.from(elements.itemsList.children).filter(el => !el.classList.contains('item-fade-out'));
+        const maxVisible = 5;
+        if (items.length > maxVisible) {
+            showMoreBtn.textContent = uiState.itemsExpanded ? t('show-less') : `${t('show-more')} (${items.length - maxVisible} ${state.settings.language === 'zh' ? '筆' : 'items'})`;
+        } else {
+            showMoreBtn.textContent = t('show-more');
+        }
+    } else if (showMoreBtn && showMoreBtn.textContent.includes('顯示更多')) {
+        showMoreBtn.textContent = t('show-more');
+    }
+    
+    // Footer
+    const budgetUsageLabel = document.querySelector('footer .text-xs.text-gray-500');
+    if (budgetUsageLabel) budgetUsageLabel.textContent = t('budget-usage');
+    const budgetLabels = document.querySelectorAll('footer .text-sm.text-gray-500');
+    if (budgetLabels.length >= 3) {
+        budgetLabels[0].textContent = t('budget');
+        budgetLabels[1].textContent = t('total-spent');
+        budgetLabels[2].textContent = t('remaining');
+    }
+    const budgetWarning = document.getElementById('budget-warning');
+    if (budgetWarning) budgetWarning.textContent = t('budget-warning');
+    
+    // Modal - Always update to ensure correct language
+    const modalTitle = document.getElementById('modal-title');
+    if (modalTitle) {
+        // Only update if it's still the default Chinese text
+        if (modalTitle.textContent === '提示' || modalTitle.textContent === 'Tip') {
+            modalTitle.textContent = t('tip');
+        }
+    }
+    const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+    if (modalConfirmBtn) {
+        // Always update confirm button
+        modalConfirmBtn.textContent = t('confirm');
+    }
+    const modalCancelBtn = document.getElementById('modal-cancel-btn');
+    if (modalCancelBtn) {
+        // Always update cancel button
+        modalCancelBtn.textContent = t('cancel');
+    }
+    
+    // Re-render items to update translations
+    render();
+}
+
+// Switch language
+function switchLanguage() {
+    state.settings.language = state.settings.language === 'zh' ? 'en' : 'zh';
+    localStorage.setItem('language', state.settings.language);
+    saveData();
+    updateLanguageUI();
+}
+
 function init() {
     console.log('Budget Master Initialized');
     loadData();
     setupEventListeners();
     restoreCollapsedStates();
+    updateLanguageUI();
     render();
 }
 
@@ -222,6 +659,13 @@ function loadData() {
         elements.currencySelect.value = state.settings.currency;
         elements.exchangeRateInput.value = state.settings.exchangeRate;
         elements.taxRateInput.value = state.settings.taxRate;
+        
+        // If TWD is selected, disable exchange rate input
+        if (state.settings.currency === 'TWD') {
+            elements.exchangeRateInput.disabled = true;
+            elements.fetchRateBtn.disabled = true;
+            elements.fetchRateBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
 
         // Restore cart items if any
         if (parsed.cartItems) {
@@ -312,9 +756,27 @@ function setupEventListeners() {
     // Settings Events
     elements.currencySelect.addEventListener('change', () => {
         state.settings.currency = elements.currencySelect.value;
-        saveData();
-        if (state.settings.rateMode === 'api') {
-            fetchExchangeRate();
+        // If TWD is selected, set exchange rate to 1 and disable input
+        if (state.settings.currency === 'TWD') {
+            state.settings.exchangeRate = 1;
+            elements.exchangeRateInput.value = '1';
+            elements.exchangeRateInput.disabled = true;
+            elements.fetchRateBtn.disabled = true;
+            elements.fetchRateBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            saveData();
+            updateCartTwdPreview();
+            updateDirectTwdPreview();
+        } else {
+            // Re-enable input if switching away from TWD
+            if (state.settings.rateMode === 'manual') {
+                elements.exchangeRateInput.disabled = false;
+            }
+            elements.fetchRateBtn.disabled = false;
+            elements.fetchRateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            saveData();
+            if (state.settings.rateMode === 'api') {
+                fetchExchangeRate();
+            }
         }
     });
 
@@ -433,14 +895,31 @@ function setupEventListeners() {
             renderItems();
         }
     });
+
+    // Language Toggle
+    const langToggleBtn = document.getElementById('lang-toggle-btn');
+    if (langToggleBtn) {
+        langToggleBtn.addEventListener('click', switchLanguage);
+    }
 }
 
 async function fetchExchangeRate() {
     const currency = state.settings.currency;
+    
+    // If TWD is selected, set rate to 1 and return
+    if (currency === 'TWD') {
+        state.settings.exchangeRate = 1;
+        elements.exchangeRateInput.value = '1';
+        saveData();
+        updateCartTwdPreview();
+        updateDirectTwdPreview();
+        return;
+    }
+    
     const btn = document.getElementById('fetch-rate-btn');
     const originalText = btn.textContent;
 
-    btn.textContent = '更新中...';
+    btn.textContent = t('updating');
     btn.disabled = true;
 
     try {
@@ -454,17 +933,16 @@ async function fetchExchangeRate() {
             const rate = data.rates.TWD;
             state.settings.exchangeRate = rate;
             elements.exchangeRateInput.value = rate;
-            elements.exchangeRateInput.value = rate;
             saveData();
             updateCartTwdPreview();
             updateDirectTwdPreview();
-            showModal('成功', `已更新匯率：1 ${currency} = ${rate} TWD`);
+            showModal(t('success'), `${t('rate-updated')}：1 ${currency} = ${rate} TWD`);
         } else {
             throw new Error('無法取得匯率');
         }
     } catch (error) {
         console.error(error);
-        showModal('錯誤', '匯率更新失敗，請檢查網路或稍後再試');
+        showModal(t('error'), t('rate-update-failed'));
     } finally {
         btn.textContent = originalText;
         btn.disabled = false;
@@ -530,7 +1008,7 @@ function addItemFromCart() {
     if (isNaN(quantity)) logDebug('Invalid quantity');
 
     if (!activeCategoryBtn || isNaN(price) || isNaN(quantity)) {
-        showModal('提示', '請選擇商品類別並輸入價格與數量');
+        showModal(t('tip'), t('select-category-price'));
         return;
     }
 
@@ -572,7 +1050,7 @@ function addExpenseFromDirect() {
     const activeCategoryBtn = document.querySelector('.category-btn.active');
 
     if (isNaN(price) || !activeCategoryBtn) {
-        showModal('提示', '請選擇類別並輸入金額');
+        showModal(t('tip'), t('select-category-amount'));
         return;
     }
 
@@ -637,9 +1115,9 @@ function formatDate(timestamp) {
             const diffHours = Math.floor(timeDiffMs / (1000 * 60 * 60));
             if (diffHours === 0) {
                 const diffMinutes = Math.floor(timeDiffMs / (1000 * 60));
-                return diffMinutes <= 1 ? '剛剛' : `${diffMinutes} 分鐘前`;
+                return diffMinutes <= 1 ? t('just-now') : `${diffMinutes} ${t('minutes-ago')}`;
             }
-            return diffHours === 1 ? '1 小時前' : `${diffHours} 小時前`;
+            return diffHours === 1 ? `1 ${t('hour-ago')}` : `${diffHours} ${t('hours-ago')}`;
         }
         // For previous days (including yesterday), show absolute date
         else {
@@ -656,7 +1134,7 @@ function renderItems() {
     elements.itemsList.innerHTML = '';
 
     if (state.items.length === 0) {
-        elements.itemsList.innerHTML = '<div class="text-center text-gray-400 py-8 text-sm">尚未新增任何項目</div>';
+        elements.itemsList.innerHTML = `<div class="text-center text-gray-400 py-8 text-sm">${t('no-items')}</div>`;
         elements.showMoreBtn.classList.add('hidden');
         return;
     }
@@ -738,7 +1216,8 @@ function renderItems() {
     // Show/hide "Show More" button
     if (shouldShowMore) {
         elements.showMoreBtn.classList.remove('hidden');
-        elements.showMoreBtn.textContent = uiState.itemsExpanded ? '顯示較少...' : `顯示更多... (${sortedItems.length - maxVisible} 筆)`;
+        const itemText = state.settings.language === 'zh' ? '筆' : 'items';
+        elements.showMoreBtn.textContent = uiState.itemsExpanded ? t('show-less') : `${t('show-more')} (${sortedItems.length - maxVisible} ${itemText})`;
     } else {
         elements.showMoreBtn.classList.add('hidden');
     }
@@ -774,7 +1253,7 @@ function updateStatistics() {
     }
 
     const dailyAvg = Math.round(totalSpent / dayCount);
-    dailyAverageEl.textContent = `NT$ ${dailyAvg}`;
+    dailyAverageEl.textContent = `NT$ ${dailyAvg.toLocaleString()}`;
 
     // Calculate top category
     const categoryTotals = {};
@@ -794,26 +1273,16 @@ function updateStatistics() {
     });
 
     const categoryName = getCategoryName(topCategory);
-    topCategoryEl.textContent = `${categoryName} NT$ ${Math.round(topAmount)}`;
+    topCategoryEl.textContent = `${categoryName} NT$ ${Math.round(topAmount).toLocaleString()}`;
 }
 
 function getCategoryName(cat) {
-    const map = {
-        'food': '飲食',
-        'groceries': '食材',
-        'daily': '日用品',
-        'transport': '交通',
-        'entertainment': '娛樂',
-        'shopping': '娛樂', // Backward compatibility
-        'accommodation': '住宿',
-        'flight': '機票',
-        'other': '其他'
-    };
-    return map[cat] || '消費';
+    const categoryKey = `category-${cat}`;
+    return t(categoryKey) || t('expense');
 }
 
 async function deleteItem(id) {
-    const confirmed = await showModal('確認刪除', '確定要刪除此項目嗎？', true);
+    const confirmed = await showModal(t('confirm-delete'), t('confirm-delete-msg'), true);
     if (confirmed) {
         state.items = state.items.filter(i => i.id !== id);
         saveData();
@@ -882,7 +1351,7 @@ function renderCart() {
     elements.cartItemsList.innerHTML = '';
 
     if (state.cartItems.length === 0) {
-        elements.cartItemsList.innerHTML = '<div class="text-center text-gray-400 py-4 text-sm">購物車是空的</div>';
+        elements.cartItemsList.innerHTML = `<div class="text-center text-gray-400 py-4 text-sm">${t('cart-empty')}</div>`;
         elements.cartSubtotal.textContent = 'NT$ 0';
         elements.cartCount.textContent = '(0)';
         return;
@@ -915,15 +1384,24 @@ function renderCart() {
 
     elements.cartSubtotal.textContent = `NT$ ${subtotal}`;
     elements.cartCount.textContent = `(${state.cartItems.length})`;
+    
+    // Update subtotal label text after rendering
+    const cartStagingArea = document.getElementById('cart-staging-area');
+    if (cartStagingArea) {
+        const subtotalLabel = cartStagingArea.querySelector('span.text-sm.text-gray-600');
+        if (subtotalLabel && (subtotalLabel.textContent.includes('小計') || subtotalLabel.textContent.includes('Subtotal'))) {
+            subtotalLabel.textContent = t('subtotal');
+        }
+    }
 }
 
 async function checkoutCart() {
     if (state.cartItems.length === 0) {
-        showModal('提示', '購物車是空的');
+        showModal(t('tip'), t('cart-empty'));
         return;
     }
 
-    const confirmed = await showModal('確認結帳', `確定要結帳 ${state.cartItems.length} 個項目嗎？`, true);
+    const confirmed = await showModal(t('confirm-checkout'), `${t('confirm-checkout-msg')} ${state.cartItems.length} ${t('items')}？`, true);
     if (confirmed) {
         // Move items from cart to main list
         state.items = [...state.cartItems, ...state.items];
@@ -931,7 +1409,7 @@ async function checkoutCart() {
 
         saveData();
         render();
-        showModal('成功', '結帳完成！');
+        showModal(t('success'), t('checkout-success'));
     }
 }
 
