@@ -1,5 +1,5 @@
 /**
- * Budget Master - Main Application Logic
+ * Pocket Trip - Main Application Logic
  */
 
 // State
@@ -25,7 +25,7 @@ const state = {
 // Translation object
 const translations = {
     zh: {
-        'header-title': '旅行預算小幫手',
+        'header-title': '旅費隨記',
         'lang-display': '中文',
         'travel-info': '旅程資訊',
         'edit': '編輯',
@@ -107,7 +107,7 @@ const translations = {
         'hour-ago': '小時前'
     },
     en: {
-        'header-title': 'Budget Master',
+        'header-title': 'Pocket Trip',
         'lang-display': 'EN',
         'travel-info': 'Travel Info',
         'edit': 'Edit',
@@ -488,7 +488,7 @@ function updateLanguageUI() {
     if (directModeBtn) directModeBtn.textContent = t('direct-mode');
 
     // Cart Input - Update category buttons
-    const cartCategoryButtons = document.querySelectorAll('#cart-input-panel .category-btn span.text-xs');
+    const cartCategoryButtons = document.querySelectorAll('#cart-input-panel .category-btn span:last-child');
     cartCategoryButtons.forEach(btn => {
         const categoryBtn = btn.closest('.category-btn');
         if (categoryBtn) {
@@ -511,7 +511,7 @@ function updateLanguageUI() {
     if (addItemBtn) addItemBtn.innerHTML = `<span class="text-xl mr-2">+</span> ${t('add-to-cart')}`;
 
     // Direct Input - Update category buttons
-    const directCategoryButtons = document.querySelectorAll('#direct-input-panel .category-btn span.text-xs');
+    const directCategoryButtons = document.querySelectorAll('#direct-input-panel .category-btn span:last-child');
     directCategoryButtons.forEach(btn => {
         const categoryBtn = btn.closest('.category-btn');
         if (categoryBtn) {
@@ -640,7 +640,7 @@ function switchLanguage() {
 }
 
 function init() {
-    console.log('Budget Master Initialized');
+    console.log('Pocket Trip Initialized');
     loadData();
     // Ensure inputs are in correct display mode (text mode for dates)
     toggleTravelInfoEdit(false);
@@ -667,7 +667,7 @@ function restoreCollapsedStates() {
 }
 
 function loadData() {
-    const savedState = localStorage.getItem('budgetMasterState');
+    const savedState = localStorage.getItem('pocketTripState');
     if (savedState) {
         const parsed = JSON.parse(savedState);
         Object.assign(state, parsed);
@@ -710,7 +710,7 @@ function loadData() {
 }
 
 function saveData() {
-    localStorage.setItem('budgetMasterState', JSON.stringify(state));
+    localStorage.setItem('pocketTripState', JSON.stringify(state));
 }
 
 function toggleTravelInfoEdit(isEditing) {

@@ -1,4 +1,4 @@
-# Budget Master - Travel Budget Helper ✈️💰
+# Pocket Trip - Travel Budget Helper ✈️💰
 
 A lightweight budget and expense tracking web application designed specifically for travelers. Easily record expenses, calculate exchange rates in real-time, and keep track of your budget to avoid overspending during your trips.
 

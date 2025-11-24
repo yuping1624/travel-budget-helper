@@ -1,13 +1,13 @@
 {
-  "name": "Budget Master",
-  "short_name": "BudgetMaster",
+  "name": "Pocket Trip",
+  "short_name": "PocketTrip",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0ea5e9",
   "icons": [
     {
-      "src": "icons/budget-master-icon-512x512.png",
+      "src": "icons/pocket-trip-icon-512x512.png",
       "sizes": "2048x2048",
       "type": "image/png",
       "purpose": "any maskable"

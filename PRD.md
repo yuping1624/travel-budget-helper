@@ -1,6 +1,6 @@
 PRD.md
 
-專案名稱：旅人購物與預算小幫手 (Budget Master)
+專案名稱：旅費隨記 (Pocket Trip)
 
 ⸻
 
