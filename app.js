@@ -377,10 +377,13 @@ function updateLanguageUI() {
         startDateInput.setAttribute('lang', lang);
         startDateInput.lang = lang;
 
-        // Update label
-        const startDateLabel = startDateInput.previousElementSibling;
-        if (startDateLabel && startDateLabel.tagName === 'LABEL') {
-            startDateLabel.textContent = t('start-date');
+        // Update label - now input is wrapped in .input-outline div
+        const inputContainer = startDateInput.closest('.input-outline');
+        if (inputContainer) {
+            const startDateLabel = inputContainer.previousElementSibling;
+            if (startDateLabel && startDateLabel.tagName === 'LABEL') {
+                startDateLabel.textContent = t('start-date');
+            }
         }
     }
 
@@ -390,27 +393,38 @@ function updateLanguageUI() {
         endDateInput.setAttribute('lang', lang);
         endDateInput.lang = lang;
 
-        // Update label
-        const endDateLabel = endDateInput.previousElementSibling;
-        if (endDateLabel && endDateLabel.tagName === 'LABEL') {
-            endDateLabel.textContent = t('end-date');
+        // Update label - now input is wrapped in .input-outline div
+        const inputContainer = endDateInput.closest('.input-outline');
+        if (inputContainer) {
+            const endDateLabel = inputContainer.previousElementSibling;
+            if (endDateLabel && endDateLabel.tagName === 'LABEL') {
+                endDateLabel.textContent = t('end-date');
+            }
         }
     }
 
     const locationInput = document.getElementById('location');
     if (locationInput) {
-        const locationLabel = locationInput.previousElementSibling;
-        if (locationLabel && locationLabel.tagName === 'LABEL') {
-            locationLabel.textContent = t('location');
+        // Update label - now input is wrapped in .input-outline div
+        const inputContainer = locationInput.closest('.input-outline');
+        if (inputContainer) {
+            const locationLabel = inputContainer.previousElementSibling;
+            if (locationLabel && locationLabel.tagName === 'LABEL') {
+                locationLabel.textContent = t('location');
+            }
         }
         locationInput.placeholder = t('location-placeholder');
     }
 
     const budgetInput = document.getElementById('total-budget');
     if (budgetInput) {
-        const budgetLabel = budgetInput.previousElementSibling;
-        if (budgetLabel && budgetLabel.tagName === 'LABEL') {
-            budgetLabel.textContent = t('total-budget');
+        // Update label - now input is wrapped in .input-outline div
+        const inputContainer = budgetInput.closest('.input-outline');
+        if (inputContainer) {
+            const budgetLabel = inputContainer.previousElementSibling;
+            if (budgetLabel && budgetLabel.tagName === 'LABEL') {
+                budgetLabel.textContent = t('total-budget');
+            }
         }
     }
 
@@ -421,9 +435,13 @@ function updateLanguageUI() {
     // Update currency label
     const currencySelect = document.getElementById('currency-select');
     if (currencySelect) {
-        const currencyLabel = currencySelect.previousElementSibling;
-        if (currencyLabel && currencyLabel.tagName === 'LABEL') {
-            currencyLabel.textContent = t('currency');
+        // Update label - now select is wrapped in .input-outline div
+        const selectContainer = currencySelect.closest('.input-outline');
+        if (selectContainer) {
+            const currencyLabel = selectContainer.previousElementSibling;
+            if (currencyLabel && currencyLabel.tagName === 'LABEL') {
+                currencyLabel.textContent = t('currency');
+            }
         }
     }
 
@@ -716,12 +734,9 @@ function saveData() {
 function toggleTravelInfoEdit(isEditing) {
     elements.travelInfoInputs.forEach(input => {
         input.disabled = !isEditing;
-        // Update classes based on editing state
+        // Note: Disabled styles are now handled by CSS (.input-outline:has(.input-outline__field:disabled))
+        // Restore date input type for date inputs
         if (isEditing) {
-            // Enable editing - remove disabled styles, add normal styles
-            input.classList.remove('disabled:bg-gray-50', 'disabled:text-gray-500');
-            input.classList.add('bg-white', 'text-gray-800');
-            // Restore date input type for date inputs
             if (input.id === 'start-date' || input.id === 'end-date') {
                 // Restore value FIRST to ensure it's valid for type="date"
                 if (input.dataset.actualValue) {
@@ -734,9 +749,6 @@ function toggleTravelInfoEdit(isEditing) {
                 input.type = 'date';
             }
         } else {
-            // Disable editing - add disabled styles, remove normal styles
-            input.classList.add('disabled:bg-gray-50', 'disabled:text-gray-500');
-            input.classList.remove('bg-white', 'text-gray-800');
             // For date inputs, convert to text and format the display
             if (input.id === 'start-date' || input.id === 'end-date') {
                 const dateValue = input.value;

@@ -78,24 +78,32 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs text-gray-500 mb-1">開始日期</label>
-                            <input type="date" id="start-date" disabled
-                                class="w-full border rounded p-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-50 disabled:text-gray-500">
+                            <div class="input-outline">
+                                <input type="date" id="start-date" disabled
+                                    class="input-outline__field disabled:bg-gray-50 disabled:text-gray-500">
+                            </div>
                         </div>
                         <div>
                             <label class="block text-xs text-gray-500 mb-1">結束日期</label>
-                            <input type="date" id="end-date" disabled
-                                class="w-full border rounded p-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-50 disabled:text-gray-500">
+                            <div class="input-outline">
+                                <input type="date" id="end-date" disabled
+                                    class="input-outline__field disabled:bg-gray-50 disabled:text-gray-500">
+                            </div>
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs text-gray-500 mb-1">地點</label>
-                        <input type="text" id="location" placeholder="例如：東京" disabled
-                            class="w-full border rounded p-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-50 disabled:text-gray-500">
+                        <div class="input-outline">
+                            <input type="text" id="location" placeholder="例如：東京" disabled
+                                class="input-outline__field disabled:bg-gray-50 disabled:text-gray-500">
+                        </div>
                     </div>
                     <div>
                         <label class="block text-xs text-gray-500 mb-1">總預算 (TWD)</label>
-                        <input type="number" id="total-budget" placeholder="0" disabled
-                            class="w-full border rounded p-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-50 disabled:text-gray-500">
+                        <div class="input-outline">
+                            <input type="number" id="total-budget" placeholder="0" disabled
+                                class="input-outline__field disabled:bg-gray-50 disabled:text-gray-500">
+                        </div>
                     </div>
                 </div>
             </section>
@@ -123,20 +131,21 @@
                     <div class="flex items-center space-x-2">
                         <div class="flex-1">
                             <label class="block text-xs text-gray-500 mb-1">幣別</label>
-                            <select id="currency-select"
-                                class="w-full border rounded p-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                                <option value="TWD">TWD 台幣</option>
-                                <option value="JPY">JPY 日幣</option>
-                                <option value="USD">USD 美金</option>
-                                <option value="EUR">EUR 歐元</option>
-                                <option value="GBP">GBP 英鎊</option>
-                                <option value="AUD">AUD 澳幣</option>
-                                <option value="THB">THB 泰銖</option>
-                                <option value="CNY">CNY 人民幣</option>
-                                <option value="KRW">KRW 韓元</option>
-                                <option value="CAD">CAD 加幣</option>
-                                <!-- Add more as needed -->
-                            </select>
+                            <div class="input-outline">
+                                <select id="currency-select" class="input-outline__field">
+                                    <option value="TWD">TWD 台幣</option>
+                                    <option value="JPY">JPY 日幣</option>
+                                    <option value="USD">USD 美金</option>
+                                    <option value="EUR">EUR 歐元</option>
+                                    <option value="GBP">GBP 英鎊</option>
+                                    <option value="AUD">AUD 澳幣</option>
+                                    <option value="THB">THB 泰銖</option>
+                                    <option value="CNY">CNY 人民幣</option>
+                                    <option value="KRW">KRW 韓元</option>
+                                    <option value="CAD">CAD 加幣</option>
+                                    <!-- Add more as needed -->
+                                </select>
+                            </div>
                         </div>
                         <div class="flex-1">
                             <label class="block text-xs text-gray-500 mb-1">匯率 (1 外幣 = ? 台幣)</label>

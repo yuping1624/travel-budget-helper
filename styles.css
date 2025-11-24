@@ -282,6 +282,11 @@ select:focus {
     box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
 }
 
+.input-outline:has(.input-outline__field:disabled) {
+    background-color: #f9fafb;
+    border-color: #e5e7eb;
+}
+
 .input-outline__field {
     width: 100%;
     border: none;
@@ -291,6 +296,12 @@ select:focus {
     color: #1f2937;
     outline: none;
     box-shadow: none !important;
+}
+
+.input-outline__field:disabled {
+    background-color: transparent;
+    color: #6b7280;
+    cursor: not-allowed;
 }
 
 .input-outline__field::placeholder {
