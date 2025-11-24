@@ -624,27 +624,29 @@ function formatDate(timestamp) {
         if (isNaN(date.getTime())) return '';
 
         const now = new Date();
-        const diffMs = now - date;
+        // Get start of today (00:00:00)
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const itemDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+        const diffMs = todayStart - itemDate;
         const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-        // Show relative time for recent items
+        // Show relative time only for today's items
         if (diffDays === 0) {
-            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const timeDiffMs = now - date;
+            const diffHours = Math.floor(timeDiffMs / (1000 * 60 * 60));
             if (diffHours === 0) {
-                const diffMinutes = Math.floor(diffMs / (1000 * 60));
+                const diffMinutes = Math.floor(timeDiffMs / (1000 * 60));
                 return diffMinutes <= 1 ? '剛剛' : `${diffMinutes} 分鐘前`;
             }
             return diffHours === 1 ? '1 小時前' : `${diffHours} 小時前`;
-        } else if (diffDays === 1) {
-            return '昨天';
-        } else if (diffDays < 7) {
-            return `${diffDays} 天前`;
         }
-
-        // For older items, show absolute date
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${month}/${day}`;
+        // For previous days (including yesterday), show absolute date
+        else {
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${month}/${day}`;
+        }
     } catch (e) {
         return '';
     }
@@ -659,10 +661,22 @@ function renderItems() {
         return;
     }
 
+    // Sort items: first by date (newest first), then by category
+    const sortedItems = [...state.items].sort((a, b) => {
+        // Sort by timestamp (descending - newest first)
+        const timeDiff = new Date(b.timestamp) - new Date(a.timestamp);
+        if (timeDiff !== 0) return timeDiff;
+
+        // If same timestamp, sort by category alphabetically
+        const catA = a.category || 'other';
+        const catB = b.category || 'other';
+        return catA.localeCompare(catB);
+    });
+
     // Determine how many items to show
     const maxVisible = 5;
-    const shouldShowMore = state.items.length > maxVisible;
-    const itemsToShow = uiState.itemsExpanded ? state.items : state.items.slice(0, maxVisible);
+    const shouldShowMore = sortedItems.length > maxVisible;
+    const itemsToShow = uiState.itemsExpanded ? sortedItems : sortedItems.slice(0, maxVisible);
 
     itemsToShow.forEach(item => {
         const itemEl = document.createElement('div');
@@ -705,7 +719,7 @@ function renderItems() {
     // Show/hide "Show More" button
     if (shouldShowMore) {
         elements.showMoreBtn.classList.remove('hidden');
-        elements.showMoreBtn.textContent = uiState.itemsExpanded ? '顯示較少...' : `顯示更多... (${state.items.length - maxVisible} 筆)`;
+        elements.showMoreBtn.textContent = uiState.itemsExpanded ? '顯示較少...' : `顯示更多... (${sortedItems.length - maxVisible} 筆)`;
     } else {
         elements.showMoreBtn.classList.add('hidden');
     }
