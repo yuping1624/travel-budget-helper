@@ -95,6 +95,10 @@ const translations = {
         'currency-jpy': '日幣',
         'currency-usd': '美金',
         'currency-eur': '歐元',
+        'currency-gbp': '英鎊',
+        'currency-aud': '澳幣',
+        'currency-thb': '泰銖',
+        'currency-cny': '人民幣',
         'currency-krw': '韓元',
         'currency-cad': '加幣',
         'just-now': '剛剛',
@@ -173,6 +177,10 @@ const translations = {
         'currency-jpy': 'JPY',
         'currency-usd': 'USD',
         'currency-eur': 'EUR',
+        'currency-gbp': 'GBP',
+        'currency-aud': 'AUD',
+        'currency-thb': 'THB',
+        'currency-cny': 'CNY',
         'currency-krw': 'KRW',
         'currency-cad': 'CAD',
         'just-now': 'Just now',
@@ -490,7 +498,7 @@ function updateLanguageUI() {
     
     // Update currency select options (currencySelect already defined above)
     if (currencySelect) {
-        const currencies = ['TWD', 'JPY', 'USD', 'EUR', 'KRW', 'CAD'];
+        const currencies = ['TWD', 'JPY', 'USD', 'EUR', 'GBP', 'AUD', 'THB', 'CNY', 'KRW', 'CAD'];
         currencies.forEach(currency => {
             const option = currencySelect.querySelector(`option[value="${currency}"]`);
             if (option) {
