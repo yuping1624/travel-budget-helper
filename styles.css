@@ -11,12 +11,152 @@ body {
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
 }
 
 .category-btn.active {
-    background-color: #e0f2fe; /* sky-100 */
-    border-color: #0ea5e9; /* sky-500 */
-    color: #0284c7; /* sky-600 */
+    background-color: #e0f2fe;
+    /* sky-100 */
+    border-color: #0ea5e9;
+    /* sky-500 */
+    color: #0284c7;
+    /* sky-600 */
+}
+
+/* Fade out animation for items being removed */
+.item-fade-out {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Default state for items */
+#items-list>div {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Collapsible sections */
+.collapsible-content {
+    max-height: 1000px;
+    opacity: 1;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+}
+
+.collapsible-content.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* Chevron rotation */
+.chevron-rotated {
+    transform: rotate(-90deg);
+}
+
+/* Header gradient */
+header {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    position: relative;
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+/* Enhanced button touch feedback */
+button {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+.category-btn:active {
+    transform: scale(0.95);
+}
+
+/* Primary button enhancements */
+#add-item-btn,
+#add-expense-btn,
+#checkout-btn {
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
+}
+
+#add-item-btn:active,
+#add-expense-btn:active,
+#checkout-btn:active {
+    box-shadow: 0 1px 4px rgba(14, 165, 233, 0.2);
+}
+
+/* Smooth transitions for interactive elements */
+.category-btn,
+input,
+select {
+    transition: all 0.2s ease;
+}
+
+input:focus,
+select:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.2);
+}
+
+/* Modal animation */
+#custom-modal {
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+#custom-modal>div {
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Statistics cards animation */
+#stats-section {
+    animation: fadeIn 0.4s ease;
+}
+
+#stats-section>div>div {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#stats-section>div>div:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }

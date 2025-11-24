@@ -25,7 +25,8 @@ const state = {
 const uiState = {
     cartActiveCategory: null,
     directActiveCategory: null,
-    itemsExpanded: false // Track if items list is expanded
+    itemsExpanded: false, // Track if items list is expanded
+    sectionsCollapsed: JSON.parse(localStorage.getItem('sectionsCollapsed') || '{}') // Track collapsed sections
 };
 
 // Debug helper
@@ -143,12 +144,58 @@ function closeModal() {
     elements.modal.classList.add('hidden');
 }
 
+// Toggle collapsible sections
+function toggleSection(contentId) {
+    const content = document.getElementById(contentId);
+    const chevronId = contentId.replace('-content', '-chevron');
+    const chevron = document.getElementById(chevronId);
+
+    if (!content) return;
+
+    const isCollapsed = content.classList.contains('collapsed');
+
+    if (isCollapsed) {
+        // Expand
+        content.classList.remove('collapsed');
+        if (chevron) chevron.classList.remove('chevron-rotated');
+        uiState.sectionsCollapsed[contentId] = false;
+    } else {
+        // Collapse
+        content.classList.add('collapsed');
+        if (chevron) chevron.classList.add('chevron-rotated');
+        uiState.sectionsCollapsed[contentId] = true;
+    }
+
+    // Save state
+    localStorage.setItem('sectionsCollapsed', JSON.stringify(uiState.sectionsCollapsed));
+}
+
+// Expose to global scope for onclick
+window.toggleSection = toggleSection;
+
 // Initialization
 function init() {
     console.log('Budget Master Initialized');
     loadData();
     setupEventListeners();
+    restoreCollapsedStates();
     render();
+}
+
+// Restore collapsed section states
+function restoreCollapsedStates() {
+    Object.keys(uiState.sectionsCollapsed).forEach(contentId => {
+        if (uiState.sectionsCollapsed[contentId]) {
+            const content = document.getElementById(contentId);
+            const chevronId = contentId.replace('-content', '-chevron');
+            const chevron = document.getElementById(chevronId);
+
+            if (content) {
+                content.classList.add('collapsed');
+                if (chevron) chevron.classList.add('chevron-rotated');
+            }
+        }
+    });
 }
 
 function loadData() {
@@ -335,10 +382,56 @@ function setupEventListeners() {
     // Checkout Cart
     elements.checkoutBtn.addEventListener('click', (e) => { e.preventDefault(); checkoutCart(); });
 
-    // Show More/Less button
+    // Show More/Less button - improved version
     elements.showMoreBtn.addEventListener('click', () => {
+        const wasExpanded = uiState.itemsExpanded;
         uiState.itemsExpanded = !uiState.itemsExpanded;
-        renderItems();
+
+        if (wasExpanded && !uiState.itemsExpanded) {
+            // Collapsing: smooth scroll to show button position, then collapse
+            const items = Array.from(elements.itemsList.children);
+            const maxVisible = 5;
+
+            // Mark items for fade out
+            items.slice(maxVisible).forEach(item => {
+                item.classList.add('item-fade-out');
+            });
+
+            // Scroll to make the 5th item and show button visible
+            setTimeout(() => {
+                if (items[4]) {
+                    items[4].scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'end'
+                    });
+                }
+            }, 50);
+
+            // Wait for scroll and animation, then re-render
+            setTimeout(() => {
+                renderItems();
+            }, 400);
+        } else if (!wasExpanded && uiState.itemsExpanded) {
+            // Expanding: re-render then scroll to show new items
+            const oldScrollY = window.scrollY;
+            renderItems();
+
+            // Restore scroll position briefly
+            window.scrollTo(0, oldScrollY);
+
+            // Then smoothly scroll to reveal 6th item
+            setTimeout(() => {
+                const items = elements.itemsList.children;
+                if (items.length > 5) {
+                    items[5].scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }
+            }, 100);
+        } else {
+            renderItems();
+        }
     });
 }
 
@@ -529,10 +622,29 @@ function formatDate(timestamp) {
     try {
         const date = new Date(timestamp);
         if (isNaN(date.getTime())) return '';
-        const year = date.getFullYear();
+
+        const now = new Date();
+        const diffMs = now - date;
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+        // Show relative time for recent items
+        if (diffDays === 0) {
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            if (diffHours === 0) {
+                const diffMinutes = Math.floor(diffMs / (1000 * 60));
+                return diffMinutes <= 1 ? '剛剛' : `${diffMinutes} 分鐘前`;
+            }
+            return diffHours === 1 ? '1 小時前' : `${diffHours} 小時前`;
+        } else if (diffDays === 1) {
+            return '昨天';
+        } else if (diffDays < 7) {
+            return `${diffDays} 天前`;
+        }
+
+        // For older items, show absolute date
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
-        return `${year}/${month}/${day}`;
+        return `${month}/${day}`;
     } catch (e) {
         return '';
     }
@@ -597,6 +709,59 @@ function renderItems() {
     } else {
         elements.showMoreBtn.classList.add('hidden');
     }
+
+    // Update statistics
+    updateStatistics();
+}
+
+// Update statistics display
+function updateStatistics() {
+    const statsSection = document.getElementById('stats-section');
+    const dailyAverageEl = document.getElementById('daily-average');
+    const topCategoryEl = document.getElementById('top-category');
+
+    if (state.items.length === 0) {
+        statsSection.classList.add('hidden');
+        return;
+    }
+
+    statsSection.classList.remove('hidden');
+
+    // Calculate daily average
+    const totalSpent = state.items.reduce((acc, item) => {
+        return acc + (item.price * item.exchangeRate * (1 + item.taxRate / 100) * (item.quantity || 1));
+    }, 0);
+
+    // Calculate days in trip
+    let dayCount = 1;
+    if (state.travelInfo.startDate && state.travelInfo.endDate) {
+        const start = new Date(state.travelInfo.startDate);
+        const end = new Date(state.travelInfo.endDate);
+        dayCount = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1);
+    }
+
+    const dailyAvg = Math.round(totalSpent / dayCount);
+    dailyAverageEl.textContent = `NT$ ${dailyAvg}`;
+
+    // Calculate top category
+    const categoryTotals = {};
+    state.items.forEach(item => {
+        const category = item.category || 'other';
+        const amount = item.price * item.exchangeRate * (1 + item.taxRate / 100) * (item.quantity || 1);
+        categoryTotals[category] = (categoryTotals[category] || 0) + amount;
+    });
+
+    let topCategory = 'other';
+    let topAmount = 0;
+    Object.entries(categoryTotals).forEach(([cat, amount]) => {
+        if (amount > topAmount) {
+            topAmount = amount;
+            topCategory = cat;
+        }
+    });
+
+    const categoryName = getCategoryName(topCategory);
+    topCategoryEl.textContent = `${categoryName} NT$ ${Math.round(topAmount)}`;
 }
 
 function getCategoryName(cat) {

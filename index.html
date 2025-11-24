@@ -38,16 +38,28 @@
 
             <!-- Section 1: Travel Info -->
             <section id="travel-info" class="bg-white rounded-lg p-4 shadow-sm border border-gray-100 relative">
-                <div class="flex justify-between items-center mb-3">
-                    <h2 class="text-lg font-semibold text-gray-700">旅程資訊</h2>
-                    <button type="button" id="edit-info-btn" class="text-sm text-primary hover:text-sky-700">
-                        編輯
-                    </button>
-                    <button type="button" id="save-info-btn" class="text-sm text-success hover:text-green-700 hidden">
-                        儲存
-                    </button>
+                <div class="flex justify-between items-center mb-3 cursor-pointer"
+                    onclick="toggleSection('travel-info-content')">
+                    <div class="flex items-center space-x-2">
+                        <h2 class="text-lg font-semibold text-gray-700">旅程資訊</h2>
+                        <svg id="travel-info-chevron" class="w-5 h-5 text-gray-500 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button type="button" id="edit-info-btn" class="text-sm text-primary hover:text-sky-700"
+                            onclick="event.stopPropagation()">
+                            編輯
+                        </button>
+                        <button type="button" id="save-info-btn"
+                            class="text-sm text-success hover:text-green-700 hidden" onclick="event.stopPropagation()">
+                            儲存
+                        </button>
+                    </div>
                 </div>
-                <div class="space-y-3">
+                <div id="travel-info-content" class="collapsible-content space-y-3">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs text-gray-500 mb-1">開始日期</label>
@@ -75,16 +87,24 @@
 
             <!-- Section 2: Exchange Rate -->
             <section id="exchange-rate" class="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-                <div class="flex justify-between items-center mb-3">
-                    <h2 class="text-lg font-semibold text-gray-700">匯率設定</h2>
-                    <div class="flex bg-gray-100 rounded p-1">
+                <div class="flex justify-between items-center mb-3 cursor-pointer"
+                    onclick="toggleSection('exchange-rate-content')">
+                    <div class="flex items-center space-x-2">
+                        <h2 class="text-lg font-semibold text-gray-700">匯率設定</h2>
+                        <svg id="exchange-rate-chevron" class="w-5 h-5 text-gray-500 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="flex bg-gray-100 rounded p-1" onclick="event.stopPropagation()">
                         <button type="button" id="rate-api-btn"
                             class="px-3 py-1 text-xs rounded bg-white shadow-sm text-primary font-medium transition-all">API</button>
                         <button type="button" id="rate-manual-btn"
                             class="px-3 py-1 text-xs rounded text-gray-500 transition-all">手動</button>
                     </div>
                 </div>
-                <div class="space-y-3">
+                <div id="exchange-rate-content" class="collapsible-content space-y-3">
                     <div class="flex items-center space-x-2">
                         <div class="flex-1">
                             <label class="block text-xs text-gray-500 mb-1">幣別</label>
@@ -289,6 +309,23 @@
                     class="w-full bg-success text-white p-2 rounded shadow-md hover:bg-green-600 transition font-bold">
                     確認結帳
                 </button>
+            </section>
+
+            <!-- Statistics Section -->
+            <section id="stats-section" class="hidden">
+                <h3 class="text-md font-semibold text-gray-700 px-1 mb-2">消費概覽</h3>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <!-- Daily Average -->
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-3 rounded-lg border border-blue-200">
+                        <div class="text-xs text-blue-600 mb-1">平均每日</div>
+                        <div class="text-lg font-bold text-blue-700" id="daily-average">NT$ 0</div>
+                    </div>
+                    <!-- Top Category -->
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-3 rounded-lg border border-purple-200">
+                        <div class="text-xs text-purple-600 mb-1">最大開支</div>
+                        <div class="text-lg font-bold text-purple-700" id="top-category">-</div>
+                    </div>
+                </div>
             </section>
 
             <!-- Section 5: List View -->
