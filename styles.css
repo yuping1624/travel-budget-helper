@@ -243,7 +243,6 @@ input,
 select {
     box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
     transition: all 0.2s ease;
-    border: 1px solid #d1d5db;
 }
 
 input:focus,
@@ -251,8 +250,53 @@ select:focus {
     border-color: #14B8A6 !important;
     outline: none;
     box-shadow:
-        0 0 0 3px rgba(20, 184, 166, 0.12),
+        0 0 0 1px #14B8A6,
+        /* 内层细线 */
+        0 0 0 4px rgba(20, 184, 166, 0.15),
+        /* 外层光晕（加大） */
         inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Custom outline wrapper for exchange/tax inputs */
+.input-outline {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background-color: #fff;
+}
+
+.input-outline:focus-within {
+    border-color: #14B8A6;
+    box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
+}
+
+.input-outline__field {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 0.35rem 0;
+    font-size: 0.875rem;
+    color: #1f2937;
+    outline: none;
+    box-shadow: none !important;
+}
+
+.input-outline__field::placeholder {
+    color: #94a3b8;
+}
+
+.input-outline--with-addon {
+    padding-right: 0.5rem;
+}
+
+.input-outline__addon {
+    margin-left: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
 }
 
 /* ========== Item Cards Optimization ========== */
