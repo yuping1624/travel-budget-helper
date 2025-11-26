@@ -659,9 +659,10 @@ function switchLanguage() {
 
 function init() {
     console.log('Pocket Trip Initialized');
-    loadData();
+    const hasData = loadData();
     // Ensure inputs are in correct display mode (text mode for dates)
-    toggleTravelInfoEdit(false);
+    // If no data (first launch), default to edit mode (true). Otherwise view mode (false).
+    toggleTravelInfoEdit(!hasData);
     setupEventListeners();
     restoreCollapsedStates();
     updateLanguageUI();
@@ -720,10 +721,12 @@ function loadData() {
         if (parsed.cartItems) {
             state.cartItems = parsed.cartItems;
         }
+        return true; // Data loaded
     } else {
         // No saved data - ensure input fields have default values
         elements.exchangeRateInput.value = state.settings.exchangeRate;
         elements.taxRateInput.value = state.settings.taxRate;
+        return false; // No data found
     }
 }
 
@@ -1046,7 +1049,7 @@ function updateCartTwdPreview() {
     const applyTax = elements.cartTaxToggle.checked;
     const taxRate = applyTax ? (parseFloat(elements.taxRateInput.value) || state.settings.taxRate || 0) : 0;
 
-    const total = Math.round(price * quantity * exchangeRate * (1 + taxRate / 100));
+    const total = Math.round(price * quantity * exchangeRate * (1 + taxRate / 100) * 10) / 10;
     elements.cartTwdPreview.textContent = `NT$ ${total}`;
 }
 
@@ -1057,7 +1060,7 @@ function updateDirectTwdPreview() {
     const applyTax = elements.directTaxToggle.checked;
     const taxRate = applyTax ? (parseFloat(elements.taxRateInput.value) || state.settings.taxRate || 0) : 0;
 
-    const total = Math.round(price * exchangeRate * (1 + taxRate / 100));
+    const total = Math.round(price * exchangeRate * (1 + taxRate / 100) * 10) / 10;
     elements.directTwdPreview.textContent = `NT$ ${total}`;
 }
 
@@ -1079,7 +1082,7 @@ function addItemFromCart() {
 
     const category = activeCategoryBtn.dataset.category;
     const categoryIcon = activeCategoryBtn.querySelector('span').textContent;
-    const categoryName = activeCategoryBtn.querySelector('.text-xs').textContent;
+    const categoryName = activeCategoryBtn.querySelector('span:last-child').textContent;
 
     // Check tax toggle
     const applyTax = elements.cartTaxToggle.checked;
@@ -1264,7 +1267,7 @@ function renderItems() {
         itemEl.className = 'item-card bg-white p-3 rounded shadow-sm border border-gray-100 flex justify-between items-center relative overflow-hidden transition-all duration-200';
         itemEl.style.borderLeft = `4px solid ${borderColor}`;
 
-        const totalTWD = Math.round(item.price * item.exchangeRate * (1 + item.taxRate / 100) * (item.quantity || 1));
+        const totalTWD = Math.round(item.price * item.exchangeRate * (1 + item.taxRate / 100) * (item.quantity || 1) * 10) / 10;
         const dateStr = formatDate(item.timestamp);
 
         let iconHtml = '';
@@ -1342,7 +1345,7 @@ function updateStatistics() {
         dayCount = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1);
     }
 
-    const dailyAvg = Math.round(totalSpent / dayCount);
+    const dailyAvg = Math.round((totalSpent / dayCount) * 10) / 10;
     dailyAverageEl.textContent = `NT$ ${dailyAvg.toLocaleString()}`;
 
     // Calculate top category
@@ -1363,7 +1366,7 @@ function updateStatistics() {
     });
 
     const categoryName = getCategoryName(topCategory);
-    topCategoryEl.textContent = `${categoryName} NT$ ${Math.round(topAmount).toLocaleString()}`;
+    topCategoryEl.textContent = `${categoryName} NT$ ${(Math.round(topAmount * 10) / 10).toLocaleString()}`;
 }
 
 function getCategoryName(cat) {
@@ -1393,11 +1396,11 @@ function updateBudgetDisplay() {
     // Update footer displays
     const footerBudgetEl = document.getElementById('footer-budget');
     if (footerBudgetEl) {
-        footerBudgetEl.textContent = `NT$ ${Math.round(budget).toLocaleString()}`;
+        footerBudgetEl.textContent = `NT$ ${(Math.round(budget * 10) / 10).toLocaleString()}`;
     }
 
-    elements.totalSpent.textContent = `NT$ ${Math.round(totalSpent).toLocaleString()}`;
-    elements.remainingBudget.textContent = `NT$ ${Math.round(remaining).toLocaleString()}`;
+    elements.totalSpent.textContent = `NT$ ${(Math.round(totalSpent * 10) / 10).toLocaleString()}`;
+    elements.remainingBudget.textContent = `NT$ ${(Math.round(remaining * 10) / 10).toLocaleString()}`;
 
     // Update progress bar
     const progressBar = document.getElementById('budget-progress-bar');
@@ -1453,7 +1456,7 @@ function renderCart() {
         const itemEl = document.createElement('div');
         itemEl.className = 'bg-gray-50 p-2 rounded border border-gray-100 flex justify-between items-center text-sm';
 
-        const totalTWD = Math.round(item.price * item.exchangeRate * (1 + item.taxRate / 100) * (item.quantity || 1));
+        const totalTWD = Math.round(item.price * item.exchangeRate * (1 + item.taxRate / 100) * (item.quantity || 1) * 10) / 10;
         subtotal += totalTWD;
 
         itemEl.innerHTML = `
@@ -1466,13 +1469,15 @@ function renderCart() {
             </div>
             <div class="flex items-center space-x-2">
                 <div class="font-bold text-gray-700">NT$ ${totalTWD}</div>
-                <button class="text-red-400 hover:text-red-600" onclick="deleteCartItem(${item.id})">✕</button>
+                <button class="delete-btn text-red-400 hover:text-red-600" onclick="deleteCartItem(${item.id})">✕</button>
             </div>
         `;
         elements.cartItemsList.appendChild(itemEl);
     });
 
-    elements.cartSubtotal.textContent = `NT$ ${subtotal}`;
+    // Round subtotal to avoid floating-point precision errors
+    const roundedSubtotal = Math.round(subtotal * 10) / 10;
+    elements.cartSubtotal.textContent = `NT$ ${roundedSubtotal}`;
     elements.cartCount.textContent = `(${state.cartItems.length})`;
 
     // Update subtotal label text after rendering

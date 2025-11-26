@@ -5,9 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pocket Trip - 旅費隨記</title>
+    <meta name="theme-color" content="#14B8A6">
     <!-- PWA Icons -->
-    <link rel="icon" type="image/png" href="icons/budget-master-icon-512x512.png">
-    <link rel="apple-touch-icon" href="icons/budget-master-icon-512x512.png">
+    <link rel="icon" type="image/png" href="img/pocket-trip-icon-512x512.png">
+    <link rel="apple-touch-icon" href="img/pocket-trip-icon-512x512.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
@@ -15,27 +16,19 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        primary: '#14B8A6', // Teal 500 - 青綠色
-                        'primary-dark': '#0D9488', // Teal 600
-                        secondary: '#64748b', // Slate 500
-                        accent: '#06B6D4', // Cyan 500
-                        success: '#10B981', // Emerald 500
-                        danger: '#EF4444', // Red 500
-                        'bg-main': '#F8FAFC', // Slate 50
-                    }
+                    // Reverted custom colors
                 }
             }
         }
     </script>
 </head>
 
-<body class="bg-bg-main text-gray-800 font-sans min-h-screen">
+<body class="text-gray-800 font-sans min-h-screen">
 
     <div class="max-w-md md:max-w-lg mx-auto bg-white min-h-screen shadow-lg flex flex-col">
 
         <!-- Header -->
-        <header class="bg-primary text-white p-4 sticky top-0 z-10 shadow-md">
+        <header class="bg-teal-500 text-white p-4 sticky top-0 z-10 shadow-md">
             <div class="relative flex items-center">
                 <h1 id="header-title"
                     class="text-xl font-bold flex-1 text-center absolute left-0 right-0 pointer-events-none">Budget
@@ -64,12 +57,13 @@
                         </svg>
                     </div>
                     <div class="flex space-x-2">
-                        <button type="button" id="edit-info-btn" class="text-sm text-primary hover:text-sky-700"
+                        <button type="button" id="edit-info-btn" class="text-sm text-teal-500 hover:text-sky-700"
                             onclick="event.stopPropagation()">
                             編輯
                         </button>
                         <button type="button" id="save-info-btn"
-                            class="text-sm text-success hover:text-green-700 hidden" onclick="event.stopPropagation()">
+                            class="text-sm text-green-500 hover:text-green-700 hidden"
+                            onclick="event.stopPropagation()">
                             儲存
                         </button>
                     </div>
@@ -122,7 +116,7 @@
                     </div>
                     <div class="flex bg-gray-100 rounded p-1" onclick="event.stopPropagation()">
                         <button type="button" id="rate-api-btn"
-                            class="px-3 py-1 text-xs rounded bg-white shadow-sm text-primary font-medium transition-all">即時</button>
+                            class="px-3 py-1 text-xs rounded bg-white shadow-sm text-teal-500 font-medium transition-all">即時</button>
                         <button type="button" id="rate-manual-btn"
                             class="px-3 py-1 text-xs rounded text-gray-500 transition-all">手動</button>
                     </div>
@@ -157,7 +151,7 @@
                     </div>
 
                     <button type="button" id="fetch-rate-btn"
-                        class="w-full bg-secondary text-white p-2 rounded text-sm hover:bg-slate-600 transition">更新匯率</button>
+                        class="w-full bg-slate-500 text-white p-2 rounded text-sm hover:bg-slate-600 transition">更新匯率</button>
 
                     <div class="border-t border-gray-100 pt-3 mt-2">
                         <label class="block text-xs text-gray-500 mb-1">稅率 (%)</label>
@@ -173,7 +167,7 @@
             <!-- Section 3: Mode Switcher -->
             <div class="flex border-b border-gray-200">
                 <button type="button" id="mode-cart-btn"
-                    class="flex-1 py-3 text-center text-sm font-medium text-primary border-b-2 border-primary">
+                    class="flex-1 py-3 text-center text-sm font-medium text-teal-500 border-b-2 border-teal-500">
                     🛒 購物車模式
                 </button>
                 <button type="button" id="mode-direct-btn"
@@ -188,56 +182,56 @@
                 <div id="cart-input-panel" class="space-y-3">
                     <div class="grid grid-cols-4 gap-2 mb-2 cart-category-selector">
                         <button type="button"
-                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-teal-500"
                             data-category="food">
                             <span>🍔</span>
                             <span
                                 class="text-[10px] sm:text-xs mt-1 break-words text-center w-full leading-tight">飲食</span>
                         </button>
                         <button type="button"
-                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-teal-500"
                             data-category="groceries">
                             <span>🥦</span>
                             <span
                                 class="text-[10px] sm:text-xs mt-1 break-words text-center w-full leading-tight">食材</span>
                         </button>
                         <button type="button"
-                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-teal-500"
                             data-category="daily">
                             <span>🧻</span>
                             <span
                                 class="text-[10px] sm:text-xs mt-1 break-words text-center w-full leading-tight">日用品</span>
                         </button>
                         <button type="button"
-                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-teal-500"
                             data-category="transport">
                             <span>🚆</span>
                             <span
                                 class="text-[10px] sm:text-xs mt-1 break-words text-center w-full leading-tight">交通</span>
                         </button>
                         <button type="button"
-                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-teal-500"
                             data-category="entertainment">
                             <span>🎮</span>
                             <span
                                 class="text-[10px] sm:text-xs mt-1 break-words text-center w-full leading-tight">娛樂</span>
                         </button>
                         <button type="button"
-                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-teal-500"
                             data-category="accommodation">
                             <span>🏨</span>
                             <span
                                 class="text-[10px] sm:text-xs mt-1 break-words text-center w-full leading-tight">住宿</span>
                         </button>
                         <button type="button"
-                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-teal-500"
                             data-category="flight">
                             <span>✈️</span>
                             <span
                                 class="text-[10px] sm:text-xs mt-1 break-words text-center w-full leading-tight">機票</span>
                         </button>
                         <button type="button"
-                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-teal-500"
                             data-category="other">
                             <span>📝</span>
                             <span
@@ -245,7 +239,7 @@
                         </button>
                     </div>
                     <div class="flex items-center space-x-2 mb-2">
-                        <input type="checkbox" id="cart-tax-toggle" class="form-checkbox h-4 w-4 text-primary" checked>
+                        <input type="checkbox" id="cart-tax-toggle" class="form-checkbox h-4 w-4 text-teal-500" checked>
                         <label for="cart-tax-toggle" class="text-sm text-gray-600">含稅計算</label>
                     </div>
                     <div class="flex space-x-2">
@@ -258,9 +252,9 @@
                         </div>
                     </div>
                     <div class="text-right text-sm text-gray-500">預估: <span id="cart-twd-preview"
-                            class="font-bold text-primary">NT$ 0</span></div>
+                            class="font-bold text-teal-500">NT$ 0</span></div>
                     <button type="button" id="add-item-btn"
-                        class="w-full bg-primary text-white p-2 rounded shadow-md hover:bg-sky-600 transition flex items-center justify-center">
+                        class="w-full bg-teal-500 text-white p-2 rounded shadow-md hover:bg-sky-600 transition flex items-center justify-center">
                         <span class="text-xl mr-2">+</span> 加入購物車
                     </button>
                 </div>
@@ -269,56 +263,56 @@
                 <div id="direct-input-panel" class="hidden space-y-3">
                     <div class="grid grid-cols-4 gap-2 mb-2" id="category-icons">
                         <button type="button"
-                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-teal-500"
                             data-category="food">
                             <span>🍔</span>
                             <span
                                 class="text-[10px] sm:text-xs mt-1 break-words text-center w-full leading-tight">飲食</span>
                         </button>
                         <button type="button"
-                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-teal-500"
                             data-category="groceries">
                             <span>🥦</span>
                             <span
                                 class="text-[10px] sm:text-xs mt-1 break-words text-center w-full leading-tight">食材</span>
                         </button>
                         <button type="button"
-                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-teal-500"
                             data-category="daily">
                             <span>🧻</span>
                             <span
                                 class="text-[10px] sm:text-xs mt-1 break-words text-center w-full leading-tight">日用品</span>
                         </button>
                         <button type="button"
-                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-teal-500"
                             data-category="transport">
                             <span>🚆</span>
                             <span
                                 class="text-[10px] sm:text-xs mt-1 break-words text-center w-full leading-tight">交通</span>
                         </button>
                         <button type="button"
-                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-teal-500"
                             data-category="entertainment">
                             <span>🎮</span>
                             <span
                                 class="text-[10px] sm:text-xs mt-1 break-words text-center w-full leading-tight">娛樂</span>
                         </button>
                         <button type="button"
-                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-teal-500"
                             data-category="accommodation">
                             <span>🏨</span>
                             <span
                                 class="text-[10px] sm:text-xs mt-1 break-words text-center w-full leading-tight">住宿</span>
                         </button>
                         <button type="button"
-                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-teal-500"
                             data-category="flight">
                             <span>✈️</span>
                             <span
                                 class="text-[10px] sm:text-xs mt-1 break-words text-center w-full leading-tight">機票</span>
                         </button>
                         <button type="button"
-                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+                            class="category-btn p-2 border rounded flex flex-col items-center justify-center hover:bg-gray-50 focus:ring-2 focus:ring-teal-500"
                             data-category="other">
                             <span>📝</span>
                             <span
@@ -326,7 +320,7 @@
                         </button>
                     </div>
                     <div class="flex items-center space-x-2 mb-2">
-                        <input type="checkbox" id="direct-tax-toggle" class="form-checkbox h-4 w-4 text-primary"
+                        <input type="checkbox" id="direct-tax-toggle" class="form-checkbox h-4 w-4 text-teal-500"
                             checked>
                         <label for="direct-tax-toggle" class="text-sm text-gray-600">含稅計算</label>
                     </div>
@@ -334,9 +328,9 @@
                         <input type="number" id="direct-price" placeholder="金額 (外幣)" class="input-outline__field">
                     </div>
                     <div class="text-right text-sm text-gray-500">預估: <span id="direct-twd-preview"
-                            class="font-bold text-primary">NT$ 0</span></div>
+                            class="font-bold text-teal-500">NT$ 0</span></div>
                     <button type="button" id="add-expense-btn" onclick="addExpenseFromDirect()"
-                        class="w-full bg-success text-white p-2 rounded shadow-md hover:bg-green-600 transition">
+                        class="w-full bg-green-500 text-white p-2 rounded shadow-md hover:bg-green-600 transition">
                         確認記帳
                     </button>
                 </div>
@@ -354,10 +348,10 @@
                 </div>
                 <div class="border-t border-gray-100 pt-2 flex justify-between items-center mb-3">
                     <span class="text-sm text-gray-600">小計 (預估)</span>
-                    <span class="font-bold text-primary" id="cart-subtotal">NT$ 0</span>
+                    <span class="font-bold text-teal-500" id="cart-subtotal">NT$ 0</span>
                 </div>
                 <button type="button" id="checkout-btn"
-                    class="w-full bg-success text-white p-2 rounded shadow-md hover:bg-green-600 transition font-bold">
+                    class="w-full bg-green-500 text-white p-2 rounded shadow-md hover:bg-green-600 transition font-bold">
                     確認結帳
                 </button>
             </section>

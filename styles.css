@@ -1,19 +1,40 @@
-/* Custom styles to supplement Tailwind */
+/* Custom Styles */
 
-/* Decorative background pattern for desktop */
+/* Solid color background matching header */
 body {
-    -webkit-tap-highlight-color: transparent;
+    background: linear-gradient(135deg, #E0F2F1 0%, #B2DFDB 50%, #80CBC4 100%);
+    /* Teal gradient background - light to medium teal shades */
+    min-height: 100vh;
 }
 
-/* Add travel-themed background pattern on larger screens */
-@media (min-width: 768px) {
-    body {
-        background-image:
-            url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2314B8A6' fill-opacity='0.03'%3E%3Cpath d='M30 15 L35 25 L45 25 L37 32 L40 42 L30 35 L20 42 L23 32 L15 25 L25 25 Z'/%3E%3C/g%3E%3C/svg%3E"),
-            url("data:image/svg+xml,%3Csvg width='80' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2306B6D4' fill-opacity='0.025'%3E%3Crect x='30' y='20' width='20' height='25' rx='2'/%3E%3Crect x='28' y='45' width='24' height='5' rx='1'/%3E%3Crect x='35' y='15' width='10' height='5' rx='1'/%3E%3C/g%3E%3C/svg%3E");
-        background-position: 0 0, 40px 40px;
-        background-size: 60px 60px, 80px 80px;
-    }
+/* Semi-transparent cards with backdrop blur for glassmorphism effect */
+.max-w-md.bg-white,
+.max-w-lg.bg-white {
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Semi-transparent sections */
+section.bg-white {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Footer with slight transparency */
+footer.bg-white {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Decorative Background Pattern - keeping this but making it subtle or removing if it conflicts */
+.bg-pattern {
+    background-color: transparent;
+    /* Ensure it doesn't block the image */
+    background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+    background-size: 20px 20px;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -29,6 +50,7 @@ body {
     /* Firefox */
 }
 
+/* Category Button Active State */
 .category-btn.active {
     background-color: #e0f2fe;
     /* sky-100 */
@@ -38,301 +60,146 @@ body {
     /* sky-600 */
 }
 
-/* Fade out animation for items being removed */
-.item-fade-out {
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+/* Fade out animation for deleted items */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
 }
 
-/* Default state for items */
-#items-list>div {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+.fade-out {
+    animation: fadeOut 0.3s ease-out forwards;
 }
 
-/* Collapsible sections */
+/* Collapsible Section Transition */
 .collapsible-content {
-    max-height: 1000px;
-    opacity: 1;
+    max-height: 500px;
+    /* Arbitrary large height */
     overflow: hidden;
-    transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, padding 0.3s ease;
+    opacity: 1;
 }
 
 .collapsible-content.collapsed {
     max-height: 0;
     opacity: 0;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin: 0;
 }
 
-/* Chevron rotation */
+/* Chevron Rotation */
+#travel-info-chevron,
+#exchange-rate-chevron {
+    transition: transform 0.3s ease;
+}
+
 .chevron-rotated {
-    transform: rotate(-90deg);
+    transform: rotate(-180deg);
 }
 
-/* Header gradient with enhanced shadow */
-header {
-    background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);
+/* Header Gradient Text (Optional enhancement) */
+#header-title {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Button Active Press Effect */
+button:active {
+    transform: scale(0.98);
+}
+
+/* Primary Button Shadow */
+.bg-primary {
+    box-shadow: 0 4px 6px -1px rgba(20, 184, 166, 0.4), 0 2px 4px -1px rgba(20, 184, 166, 0.2);
+}
+
+/* Input Focus Ring Customization */
+.input-outline {
     position: relative;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-header::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.15) 0%, transparent 50%);
-    pointer-events: none;
-}
-
-/* Enhanced button touch feedback */
-button {
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-    -webkit-tap-highlight-color: transparent;
-}
-
-button:active {
-    transform: scale(0.97);
-}
-
-.category-btn:active {
-    transform: scale(0.95);
-}
-
-/* Primary button enhancements */
-#add-item-btn,
-#add-expense-btn,
-#checkout-btn {
-    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
-}
-
-#add-item-btn:active,
-#add-expense-btn:active,
-#checkout-btn:active {
-    box-shadow: 0 1px 4px rgba(14, 165, 233, 0.2);
-}
-
-/* Smooth transitions for interactive elements */
-.category-btn,
-input,
-select {
-    transition: all 0.2s ease;
-}
-
-input:focus,
-select:focus {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.2);
-}
-
-/* Modal animation */
-#custom-modal {
-    animation: fadeIn 0.2s ease;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-#custom-modal>div {
-    animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-    from {
-        transform: translateY(20px);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-/* Statistics cards - static, no animation */
-
-/* ========== Enhanced Visual Depth and Layers ========== */
-
-/* Section cards with elevated shadow */
-section {
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
-}
-
-section:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    transform: translateY(-2px);
-}
-
-/* Statistics section - static, no hover effects */
-#stats-section {
-    transition: none !important;
-}
-
-#stats-section:hover {
-    box-shadow: none !important;
-    transform: none !important;
-}
-
-/* List view section - static, no hover effects */
-#list-view {
-    transition: none !important;
-}
-
-#list-view:hover {
-    box-shadow: none !important;
-    transform: none !important;
-}
-
-/* Footer enhanced shadow */
-footer {
-    box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-}
-
-/* Modal deeper shadow */
-#custom-modal>div:first-child {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-/* Statistics cards - simplified */
-#stats-section>div>div {
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-}
-
-/* Enhanced button depth */
-button {
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-}
-
-button:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-button:active {
+    border-radius: 0.375rem;
+    /* rounded-md */
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-/* Remove shadows from small text buttons */
-button.text-sm,
-button.text-xs,
-.delete-btn {
-    box-shadow: none !important;
+.input-outline__field {
+    display: block;
+    width: 100%;
+    border-radius: 0.375rem;
+    border-width: 1px;
+    border-color: #d1d5db;
+    /* gray-300 */
+    padding: 0.5rem 0.75rem;
+    /* py-2 px-3 */
+    color: #1f2937;
+    /* gray-900 */
+    background-color: #ffffff;
+    /* white */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease-in-out;
 }
 
-button.text-sm:hover,
-button.text-xs:hover,
-.delete-btn:hover {
-    box-shadow: none !important;
+.input-outline__field:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    border-color: #14B8A6;
+    /* primary */
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
+    /* ring-primary/20 */
 }
 
-/* Primary buttons extra emphasis */
-.bg-primary,
-.bg-success {
-    box-shadow: 0 4px 6px -1px rgba(20, 184, 166, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.bg-primary:hover,
-.bg-success:hover {
-    box-shadow: 0 10px 15px -3px rgba(20, 184, 166, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-/* Input fields subtle depth */
-input,
-select {
-    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-    transition: all 0.2s ease;
-}
-
-input:focus,
-select:focus {
-    border-color: #14B8A6 !important;
-    outline: none;
-    box-shadow:
-        0 0 0 1px #14B8A6,
-        /* 内层细线 */
-        0 0 0 4px rgba(20, 184, 166, 0.15),
-        /* 外层光晕（加大） */
-        inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-}
-
-/* Custom outline wrapper for exchange/tax inputs */
-.input-outline {
-    border: 1.5px solid #e2e8f0;
-    border-radius: 0.5rem;
-    padding: 0.25rem 0.75rem;
+/* Addon styling for inputs with units */
+.input-outline--with-addon {
     display: flex;
     align-items: center;
-    width: 100%;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    background-color: #fff;
 }
 
-.input-outline:focus-within {
-    border-color: #14B8A6;
-    box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
-}
-
-.input-outline:has(.input-outline__field:disabled) {
-    background-color: #f9fafb;
-    border-color: #e5e7eb;
-}
-
-.input-outline__field {
-    width: 100%;
-    border: none;
-    background: transparent;
-    padding: 0.35rem 0;
-    font-size: 0.875rem;
-    color: #1f2937;
-    outline: none;
-    box-shadow: none !important;
-}
-
-.input-outline__field:disabled {
-    background-color: transparent;
-    color: #6b7280;
-    cursor: not-allowed;
-}
-
-.input-outline__field::placeholder {
-    color: #94a3b8;
-}
-
-.input-outline--with-addon {
-    padding-right: 0.5rem;
+.input-outline--with-addon .input-outline__field {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right-width: 0;
 }
 
 .input-outline__addon {
-    margin-left: 0.5rem;
-    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-width: 1px;
+    border-color: #d1d5db;
+    /* gray-300 */
+    border-top-right-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+    background-color: #f9fafb;
+    /* gray-50 */
     color: #6b7280;
+    /* gray-500 */
+    font-size: 0.875rem;
+    /* text-sm */
 }
 
-/* ========== Item Cards Optimization ========== */
-
-/* Item card with hover effect */
-.item-card {
-    cursor: default;
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+/* Modal Animation */
+#custom-modal>div {
+    animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.item-card:hover {
-    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-    transform: translateX(2px);
+@keyframes modalPop {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
-/* Monospace numbers for better alignment */
-.tabular-nums {
-    font-variant-numeric: tabular-nums;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+/* Delete Button No Shadow */
+.delete-btn {
+    box-shadow: none !important;
 }

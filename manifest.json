@@ -7,7 +7,7 @@
   "theme_color": "#0ea5e9",
   "icons": [
     {
-      "src": "icons/pocket-trip-icon-512x512.png",
+      "src": "img/pocket-trip-icon-512x512.png",
       "sizes": "2048x2048",
       "type": "image/png",
       "purpose": "any maskable"
