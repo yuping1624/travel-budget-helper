@@ -276,140 +276,426 @@ const elements = {
     modalConfirmBtn: document.getElementById('modal-confirm-btn')
 };
 
-// Modal Helper
-// Modal Helper
-// Modal Helper
-let modalUpdateLoop = null;
+// Simple Modal Helper
 let currentTriggerElement = null;
 
-function updateModalPosition() {
-    if (!currentTriggerElement || elements.modal.classList.contains('hidden')) return;
+function positionModalNearElement(triggerElement) {
+    if (!triggerElement) {
+        console.warn('No trigger element provided for modal positioning');
+        return;
+    }
+    
+    const modalContent = document.getElementById('modal-content');
+    if (!modalContent) return;
+    
+    // Verify trigger element is valid
+    if (!triggerElement.isConnected) {
+        console.warn('Trigger element is not connected to DOM');
+        return;
+    }
+    
+    // Get trigger element position relative to viewport (getBoundingClientRect already accounts for scroll)
+    const triggerRect = triggerElement.getBoundingClientRect();
+    
+    // Debug: Log trigger element info
+    console.log('Positioning modal near:', {
+        id: triggerElement.id || 'no-id',
+        text: triggerElement.textContent?.trim().substring(0, 30) || 'no-text',
+        top: Math.round(triggerRect.top),
+        bottom: Math.round(triggerRect.bottom),
+        left: Math.round(triggerRect.left),
+        right: Math.round(triggerRect.right),
+        scrollY: window.scrollY
+    });
+    
+    const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
+    const padding = 16;
+    const spacing = 12;
+    
+    // Get modal dimensions (it should be visible for measurement)
+    let modalHeight = modalContent.offsetHeight || 200;
+    const modalWidth = modalContent.offsetWidth || 384; // max-w-sm default
+    
+    // Limit modal height to ensure it can fit near the button
+    const maxModalHeight = viewportHeight - padding * 2 - spacing * 2;
+    if (modalHeight > maxModalHeight) {
+        modalHeight = maxModalHeight;
+        modalContent.style.maxHeight = `${maxModalHeight}px`;
+        modalContent.style.overflowY = 'auto';
+    }
+    
+    // Calculate vertical position - ALWAYS prioritize being near the button
+    const spaceBelow = viewportHeight - triggerRect.bottom - spacing;
+    const spaceAbove = triggerRect.top - spacing;
+    
+    let top;
+    
+    // Simple strategy: Always position relative to button, never center
+    // Try below first (preferred)
+    if (spaceBelow >= modalHeight) {
+        // Fits perfectly below
+        top = triggerRect.bottom + spacing;
+    } else if (spaceAbove >= modalHeight) {
+        // Fits perfectly above
+        top = triggerRect.top - modalHeight - spacing;
+    } else {
+        // Doesn't fit perfectly - position as close to button as possible
+        // Choose side with more space, but keep window edge near button
+        if (spaceBelow > spaceAbove) {
+            // More space below - position below button, even if it overflows
+            top = triggerRect.bottom + spacing;
+            // Only adjust if it would go completely off screen
+            if (top + modalHeight > viewportHeight) {
+                // Shift up just enough so bottom edge is visible
+                top = viewportHeight - modalHeight;
+            }
+        } else {
+            // More space above - position above button, even if it overflows
+            top = triggerRect.top - modalHeight - spacing;
+            // Only adjust if it would go completely off screen
+            if (top < 0) {
+                // Shift down just enough so top edge is visible
+                top = 0;
+            }
+        }
+    }
+    
+    // Final safety clamp - ensure at least part of modal is visible
+    // But prioritize being near button over being fully visible
+    if (top < 0) top = 0;
+    if (top + modalHeight > viewportHeight) {
+        top = Math.max(0, viewportHeight - modalHeight);
+    }
+    
+    // Calculate horizontal position (center, but ensure it fits)
+    const left = Math.max(padding, Math.min((viewportWidth - modalWidth) / 2, viewportWidth - modalWidth - padding));
+    
+    // CRITICAL FIX: Use fixed positioning directly on modal-content
+    // This positions it relative to viewport, not parent
+    // We ensure parent has no transform that would break this
+    const modalParent = modalContent.parentElement;
+    
+    // CRITICAL: Ensure parent has NO transform - this breaks fixed positioning
+    if (modalParent) {
+        // Force remove transform from parent - this is THE KEY to fixing fixed positioning
+        modalParent.style.setProperty('transform', 'none', 'important');
+        modalParent.style.setProperty('position', 'fixed', 'important');
+        modalParent.style.setProperty('top', '0', 'important');
+        modalParent.style.setProperty('left', '0', 'important');
+        modalParent.style.setProperty('width', '100%', 'important');
+        modalParent.style.setProperty('height', '100%', 'important');
+        modalParent.style.setProperty('margin', '0', 'important');
+        modalParent.style.setProperty('padding', '0', 'important');
+        
+        // Also remove any transform classes from parent
+        modalParent.classList.remove('transform', 'transition-all');
+        
+        // Set parent to use flexbox for centering
+        modalParent.style.setProperty('display', 'flex', 'important');
+        modalParent.style.setProperty('align-items', 'flex-start', 'important');
+        modalParent.style.setProperty('justify-content', 'center', 'important');
+        
+        // Force a reflow to ensure parent styles are applied
+        void modalParent.offsetHeight;
+    }
+    
+    // Use absolute positioning relative to fixed parent (which covers viewport)
+    // This works even if ancestor elements have transform
+    modalContent.style.setProperty('position', 'absolute', 'important');
+    modalContent.style.setProperty('top', `${top}px`, 'important');
+    modalContent.style.setProperty('left', `${left}px`, 'important');
+    modalContent.style.setProperty('transform', 'none', 'important');
+    modalContent.style.setProperty('margin', '0', 'important');
+    modalContent.style.setProperty('width', `${Math.min(modalWidth, viewportWidth - padding * 2)}px`, 'important');
+    modalContent.style.setProperty('max-width', '24rem', 'important');
+    modalContent.style.setProperty('z-index', '60', 'important');
+    
+    // Remove any classes that might interfere
+    modalContent.classList.remove('transform', 'transition-all');
+    
+    // Force a reflow
+    void modalContent.offsetHeight;
+    
+    // Debug: Log final position and verify
+    setTimeout(() => {
+        const actualRect = modalContent.getBoundingClientRect();
+        console.log('Modal positioned at:', {
+            expectedTop: Math.round(top),
+            actualTop: Math.round(actualRect.top),
+            expectedLeft: Math.round(left),
+            actualLeft: Math.round(actualRect.left),
+            modalHeight: Math.round(modalHeight),
+            modalWidth: Math.round(modalWidth),
+            difference: Math.round(actualRect.top - top),
+            parentTransform: modalParent ? window.getComputedStyle(modalParent).transform : 'none',
+            parentPosition: modalParent ? window.getComputedStyle(modalParent).position : 'none'
+        });
+    }, 10);
+}
+
+// Old function - removed, using positionModalNearElement instead
+function updateModalPosition_DEPRECATED(forceVisible = false, triggerElement = null) {
+    // Use provided trigger element or fallback to currentTriggerElement
+    const trigger = triggerElement || currentTriggerElement;
+    if (!trigger || elements.modal.classList.contains('hidden')) return;
+
+    // Verify the trigger element is still valid and in the DOM
+    if (!trigger.isConnected || typeof trigger.getBoundingClientRect !== 'function') {
+        return;
+    }
 
     const padding = 12;
     const modalContent = document.getElementById('modal-content');
+    if (!modalContent) return;
 
     // Ensure modal doesn't exceed viewport height
     const maxAllowedHeight = window.innerHeight - (padding * 2);
     modalContent.style.maxHeight = `${maxAllowedHeight}px`;
 
+    // Temporarily make visible (but transparent) to get accurate dimensions if needed
+    const wasHidden = !forceVisible && elements.modal.style.visibility === 'hidden';
+    if (wasHidden) {
+        elements.modal.style.visibility = 'visible';
+        elements.modal.style.opacity = '0';
+        elements.modal.style.pointerEvents = 'none';
+    }
+
+    // Force a reflow to ensure dimensions are calculated
+    void modalContent.offsetHeight;
+
     // Recalculate modalHeight after setting maxHeight
-    const modalHeight = modalContent.offsetHeight;
-    const rect = currentTriggerElement.getBoundingClientRect();
+    // Use scrollHeight as fallback if offsetHeight is 0
+    let modalHeight = modalContent.offsetHeight;
+    if (modalHeight === 0) {
+        modalHeight = modalContent.scrollHeight;
+    }
+    // If still 0, use a reasonable default
+    if (modalHeight === 0) {
+        modalHeight = 200; // Fallback default height
+    }
 
-    let top = rect.bottom + padding; // Default below
+    // Get trigger element position
+    let rect;
+    try {
+        rect = trigger.getBoundingClientRect();
+    } catch (e) {
+        return;
+    }
+    const viewportHeight = window.innerHeight;
+    const spacing = 16; // Increased spacing from button
 
-    // Check if it fits below
-    if (top + modalHeight > window.innerHeight - padding) {
-        // Try above
-        const topAbove = rect.top - modalHeight - padding;
-        if (topAbove > padding) {
-            top = topAbove;
+    // Determine button position in viewport
+    const buttonCenterY = rect.top + (rect.height / 2);
+    const viewportCenterY = viewportHeight / 2;
+    const isButtonInLowerHalf = buttonCenterY > viewportCenterY;
+
+    // Calculate available space
+    const spaceBelow = viewportHeight - rect.bottom - spacing;
+    const spaceAbove = rect.top - spacing;
+
+    let top;
+
+    // If button is in lower half of viewport, prefer showing above
+    // If button is in upper half, prefer showing below
+    if (isButtonInLowerHalf) {
+        // Button is in lower half - try above first
+        if (spaceAbove >= modalHeight + padding) {
+            // Fits above
+            top = rect.top - modalHeight - spacing;
+        } else if (spaceBelow >= modalHeight + padding) {
+            // Doesn't fit above, but fits below
+            top = rect.bottom + spacing;
         } else {
-            // If neither fits well, center vertically or clamp
-            // Let's clamp to bottom safe area
-            top = window.innerHeight - modalHeight - padding;
+            // Neither fits - position above but clamp to viewport
+            top = Math.max(padding, rect.top - modalHeight - spacing);
+        }
+    } else {
+        // Button is in upper half - try below first
+        if (spaceBelow >= modalHeight + padding) {
+            // Fits below
+            top = rect.bottom + spacing;
+        } else if (spaceAbove >= modalHeight + padding) {
+            // Doesn't fit below, but fits above
+            top = rect.top - modalHeight - spacing;
+        } else {
+            // Neither fits - position below but clamp to viewport
+            top = Math.min(viewportHeight - modalHeight - padding, rect.bottom + spacing);
         }
     }
 
-    // Final clamp to ensure it doesn't go off-screen top
-    top = Math.max(padding, top);
+    // Final clamp to ensure it doesn't go off-screen
+    top = Math.max(padding, Math.min(top, viewportHeight - modalHeight - padding));
 
-    modalContent.style.position = 'absolute';
-    modalContent.style.top = `${top}px`;
-    modalContent.style.left = '0';
-    modalContent.style.right = '0';
-    modalContent.style.margin = '0 auto'; // Center horizontally
+
+    // Use fixed positioning relative to viewport
+    // Force fixed positioning with !important to override any CSS
+    modalContent.style.setProperty('position', 'fixed', 'important');
+    modalContent.style.setProperty('top', `${top}px`, 'important');
+    modalContent.style.setProperty('left', '50%', 'important');
+    modalContent.style.setProperty('transform', 'translateX(-50%)', 'important');
+    modalContent.style.setProperty('right', 'auto', 'important');
+    modalContent.style.setProperty('bottom', 'auto', 'important');
+    modalContent.style.setProperty('margin', '0', 'important');
+    modalContent.style.setProperty('width', 'auto', 'important');
+    modalContent.style.setProperty('max-width', '24rem', 'important');
+    modalContent.style.setProperty('z-index', '60', 'important');
+    
+    // IMPORTANT: Disable CSS animation to avoid transform conflict
+    modalContent.style.setProperty('animation', 'none', 'important');
+    
+    // Force a reflow to ensure styles are applied
+    void modalContent.offsetHeight;
+
+    // Restore visibility state if it was hidden
+    if (wasHidden) {
+        elements.modal.style.visibility = 'hidden';
+        elements.modal.style.opacity = '';
+        elements.modal.style.pointerEvents = '';
+    }
 }
 
 function showModal(title, message, isConfirm = false, triggerElement = null) {
     return new Promise((resolve) => {
+        const modalContent = document.getElementById('modal-content');
+        if (!modalContent) {
+            // Fallback to alert if modal doesn't exist
+            if (isConfirm) {
+                resolve(confirm(message));
+            } else {
+                alert(message);
+                resolve(true);
+            }
+            return;
+        }
+        
+        // Set content
         elements.modalTitle.textContent = title;
         elements.modalMessage.textContent = message;
-
-        // 1. Prepare for measurement (hidden but rendered)
-        elements.modal.style.visibility = 'hidden';
-        elements.modal.style.display = 'flex';
-        elements.modal.classList.remove('hidden');
-
-        // Reset styles
-        const modalContent = document.getElementById('modal-content');
-        modalContent.style.position = '';
-        modalContent.style.top = '';
-        modalContent.style.left = '';
-        modalContent.style.transform = '';
-        modalContent.style.margin = '';
-
-        // 2. Determine positioning
-        currentTriggerElement = triggerElement;
-
-        if (triggerElement) {
-            // Position near trigger
-            elements.modal.classList.remove('items-center');
-            elements.modal.classList.remove('justify-center'); // We handle horizontal centering manually for absolute pos
-
-            updateModalPosition();
-
-            // Add listeners to update position on scroll/resize
-            window.addEventListener('scroll', updateModalPosition, true);
-            window.addEventListener('resize', updateModalPosition);
-
-        } else {
-            // Center in viewport
-            elements.modal.classList.add('items-center', 'justify-center');
-            modalContent.style.position = 'relative'; // Default
-            currentTriggerElement = null;
-        }
-
-        // 3. Show
-        // Use setTimeout to ensure the browser has time to process the layout changes
-        setTimeout(() => {
-            elements.modal.style.visibility = 'visible';
-        }, 0);
-
+        
+        // Show/hide cancel button
         if (isConfirm) {
             elements.modalCancelBtn.classList.remove('hidden');
         } else {
             elements.modalCancelBtn.classList.add('hidden');
         }
-
+        
+        // Remove ALL classes that might interfere with positioning
+        // Keep only essential classes
+        modalContent.className = 'bg-white rounded-lg p-6 max-w-sm w-full mx-4 shadow-xl max-h-[80vh] overflow-y-auto';
+        
+        // Show modal container
+        elements.modal.style.display = 'flex';
+        elements.modal.classList.remove('hidden');
+        elements.modal.style.visibility = 'visible';
+        
+        // Position modal near trigger element if provided
+        currentTriggerElement = triggerElement;
+        if (triggerElement) {
+            // Remove center classes that might interfere
+            elements.modal.classList.remove('items-center', 'justify-center');
+            
+            // CRITICAL: Ensure modal container is fixed and covers viewport
+            // This must be done BEFORE positioning the content
+            elements.modal.style.setProperty('position', 'fixed', 'important');
+            elements.modal.style.setProperty('top', '0', 'important');
+            elements.modal.style.setProperty('left', '0', 'important');
+            elements.modal.style.setProperty('width', '100%', 'important');
+            elements.modal.style.setProperty('height', '100%', 'important');
+            elements.modal.style.setProperty('transform', 'none', 'important');
+            elements.modal.style.setProperty('margin', '0', 'important');
+            elements.modal.style.setProperty('padding', '0', 'important');
+            
+            // First make it visible but transparent to measure
+            modalContent.style.opacity = '0';
+            elements.modal.style.visibility = 'visible';
+            elements.modal.style.display = 'flex';
+            
+            // Wait for layout, then position and show
+            requestAnimationFrame(() => {
+                positionModalNearElement(triggerElement);
+                
+                // Verify position was set correctly after a short delay
+                setTimeout(() => {
+                    const actualRect = modalContent.getBoundingClientRect();
+                    const expectedTop = parseInt(modalContent.style.top) || 0;
+                    console.log('Position verification:', {
+                        expectedTop: modalContent.style.top,
+                        actualTop: Math.round(actualRect.top),
+                        buttonTop: Math.round(triggerElement.getBoundingClientRect().top),
+                        difference: Math.round(actualRect.top - expectedTop),
+                        scrollY: window.scrollY
+                    });
+                }, 50);
+                
+                // Show with fade in
+                requestAnimationFrame(() => {
+                    modalContent.style.opacity = '1';
+                    modalContent.style.transition = 'opacity 0.2s';
+                });
+            });
+        } else {
+            // Center in viewport
+            elements.modal.classList.add('items-center', 'justify-center');
+            modalContent.style.position = 'relative';
+            modalContent.style.top = 'auto';
+            modalContent.style.left = 'auto';
+            modalContent.style.transform = 'none';
+            modalContent.style.opacity = '1';
+        }
+        
+        // Setup button handlers
         const cleanup = () => {
-            closeModal();
-            window.removeEventListener('scroll', updateModalPosition, true);
-            window.removeEventListener('resize', updateModalPosition);
+            elements.modal.classList.add('hidden');
+            elements.modal.style.display = 'none';
+            elements.modal.style.visibility = 'hidden';
             currentTriggerElement = null;
         };
-
+        
         const handleConfirm = () => {
             cleanup();
             resolve(true);
         };
-
+        
         const handleCancel = () => {
             cleanup();
             resolve(false);
         };
-
-        // Remove old listeners to prevent duplicates (simple approach)
+        
+        // Remove old listeners and add new ones
         const newConfirmBtn = elements.modalConfirmBtn.cloneNode(true);
         elements.modalConfirmBtn.parentNode.replaceChild(newConfirmBtn, elements.modalConfirmBtn);
         elements.modalConfirmBtn = newConfirmBtn;
-        elements.modalConfirmBtn.textContent = t('confirm'); // Update button text
-
+        elements.modalConfirmBtn.textContent = t('confirm');
+        
         const newCancelBtn = elements.modalCancelBtn.cloneNode(true);
         elements.modalCancelBtn.parentNode.replaceChild(newCancelBtn, elements.modalCancelBtn);
         elements.modalCancelBtn = newCancelBtn;
-        elements.modalCancelBtn.textContent = t('cancel'); // Update button text
-
+        elements.modalCancelBtn.textContent = t('cancel');
+        
         elements.modalConfirmBtn.addEventListener('click', handleConfirm);
+        if (!isConfirm) {
+            // For non-confirm modals, clicking confirm also closes
+            elements.modalConfirmBtn.addEventListener('click', handleConfirm);
+        }
         elements.modalCancelBtn.addEventListener('click', handleCancel);
+        
+        // Close on backdrop click
+        const backdropClick = (e) => {
+            if (e.target === elements.modal) {
+                cleanup();
+                resolve(false);
+                elements.modal.removeEventListener('click', backdropClick);
+            }
+        };
+        elements.modal.addEventListener('click', backdropClick);
     });
 }
 
 function closeModal() {
     elements.modal.classList.add('hidden');
     elements.modal.style.display = 'none';
-    window.removeEventListener('scroll', updateModalPosition, true);
-    window.removeEventListener('resize', updateModalPosition);
+    elements.modal.style.visibility = 'hidden';
     currentTriggerElement = null;
 }
 
@@ -1003,7 +1289,7 @@ function setupEventListeners() {
     elements.addItemBtn.addEventListener('click', (e) => { e.preventDefault(); addItemFromCart(); });
 
     // Checkout Cart
-    elements.checkoutBtn.addEventListener('click', (e) => { e.preventDefault(); checkoutCart(); });
+    elements.checkoutBtn.addEventListener('click', (e) => { e.preventDefault(); checkoutCart(e); });
 
     // Show More/Less button - improved version
     elements.showMoreBtn.addEventListener('click', () => {
@@ -1471,7 +1757,11 @@ function getCategoryName(cat) {
 
 async function deleteItem(id, event) {
     // Get trigger element from event if available
-    const trigger = event ? event.target : null;
+    // event.target might be the SVG or path inside the button, so we need to find the button
+    let trigger = null;
+    if (event) {
+        trigger = event.target.closest('button') || event.target;
+    }
     const confirmed = await showModal(t('confirm-delete'), t('confirm-delete-msg'), true, trigger);
     if (confirmed) {
         state.items = state.items.filter(i => i.id !== id);
@@ -1534,8 +1824,7 @@ function updateBudgetDisplay() {
     }
 }
 
-// Checkout Cart
-elements.checkoutBtn.addEventListener('click', checkoutCart);
+// Checkout Cart - removed duplicate, already handled in setupEventListeners
 
 function renderCart() {
     elements.cartItemsList.innerHTML = '';
@@ -1588,7 +1877,14 @@ function renderCart() {
 }
 
 async function checkoutCart(event) {
-    const trigger = event ? event.target : elements.checkoutBtn;
+    // Always get the checkout button directly by ID to ensure we have the correct element
+    // This is more reliable than using event.target which might be a child element
+    const trigger = document.getElementById('checkout-btn');
+    
+    if (!trigger) {
+        return;
+    }
+
 
     if (state.cartItems.length === 0) {
         showModal(t('tip'), t('cart-empty'), false, trigger);
