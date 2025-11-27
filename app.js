@@ -277,12 +277,94 @@ const elements = {
 };
 
 // Modal Helper
-function showModal(title, message, isConfirm = false) {
+// Modal Helper
+// Modal Helper
+let modalUpdateLoop = null;
+let currentTriggerElement = null;
+
+function updateModalPosition() {
+    if (!currentTriggerElement || elements.modal.classList.contains('hidden')) return;
+
+    const padding = 12;
+    const modalContent = document.getElementById('modal-content');
+
+    // Ensure modal doesn't exceed viewport height
+    const maxAllowedHeight = window.innerHeight - (padding * 2);
+    modalContent.style.maxHeight = `${maxAllowedHeight}px`;
+
+    // Recalculate modalHeight after setting maxHeight
+    const modalHeight = modalContent.offsetHeight;
+    const rect = currentTriggerElement.getBoundingClientRect();
+
+    let top = rect.bottom + padding; // Default below
+
+    // Check if it fits below
+    if (top + modalHeight > window.innerHeight - padding) {
+        // Try above
+        const topAbove = rect.top - modalHeight - padding;
+        if (topAbove > padding) {
+            top = topAbove;
+        } else {
+            // If neither fits well, center vertically or clamp
+            // Let's clamp to bottom safe area
+            top = window.innerHeight - modalHeight - padding;
+        }
+    }
+
+    // Final clamp to ensure it doesn't go off-screen top
+    top = Math.max(padding, top);
+
+    modalContent.style.position = 'absolute';
+    modalContent.style.top = `${top}px`;
+    modalContent.style.left = '0';
+    modalContent.style.right = '0';
+    modalContent.style.margin = '0 auto'; // Center horizontally
+}
+
+function showModal(title, message, isConfirm = false, triggerElement = null) {
     return new Promise((resolve) => {
         elements.modalTitle.textContent = title;
         elements.modalMessage.textContent = message;
 
+        // 1. Prepare for measurement (hidden but rendered)
+        elements.modal.style.visibility = 'hidden';
+        elements.modal.style.display = 'flex';
         elements.modal.classList.remove('hidden');
+
+        // Reset styles
+        const modalContent = document.getElementById('modal-content');
+        modalContent.style.position = '';
+        modalContent.style.top = '';
+        modalContent.style.left = '';
+        modalContent.style.transform = '';
+        modalContent.style.margin = '';
+
+        // 2. Determine positioning
+        currentTriggerElement = triggerElement;
+
+        if (triggerElement) {
+            // Position near trigger
+            elements.modal.classList.remove('items-center');
+            elements.modal.classList.remove('justify-center'); // We handle horizontal centering manually for absolute pos
+
+            updateModalPosition();
+
+            // Add listeners to update position on scroll/resize
+            window.addEventListener('scroll', updateModalPosition, true);
+            window.addEventListener('resize', updateModalPosition);
+
+        } else {
+            // Center in viewport
+            elements.modal.classList.add('items-center', 'justify-center');
+            modalContent.style.position = 'relative'; // Default
+            currentTriggerElement = null;
+        }
+
+        // 3. Show
+        // Use setTimeout to ensure the browser has time to process the layout changes
+        setTimeout(() => {
+            elements.modal.style.visibility = 'visible';
+        }, 0);
 
         if (isConfirm) {
             elements.modalCancelBtn.classList.remove('hidden');
@@ -290,13 +372,20 @@ function showModal(title, message, isConfirm = false) {
             elements.modalCancelBtn.classList.add('hidden');
         }
 
-        const handleConfirm = () => {
+        const cleanup = () => {
             closeModal();
+            window.removeEventListener('scroll', updateModalPosition, true);
+            window.removeEventListener('resize', updateModalPosition);
+            currentTriggerElement = null;
+        };
+
+        const handleConfirm = () => {
+            cleanup();
             resolve(true);
         };
 
         const handleCancel = () => {
-            closeModal();
+            cleanup();
             resolve(false);
         };
 
@@ -318,6 +407,10 @@ function showModal(title, message, isConfirm = false) {
 
 function closeModal() {
     elements.modal.classList.add('hidden');
+    elements.modal.style.display = 'none';
+    window.removeEventListener('scroll', updateModalPosition, true);
+    window.removeEventListener('resize', updateModalPosition);
+    currentTriggerElement = null;
 }
 
 // Toggle collapsible sections
@@ -1004,13 +1097,13 @@ async function fetchExchangeRate() {
             saveData();
             updateCartTwdPreview();
             updateDirectTwdPreview();
-            showModal(t('success'), `${t('rate-updated')}：1 ${currency} = ${rate} TWD`);
+            showModal(t('success'), `${t('rate-updated')}：1 ${currency} = ${rate} TWD`, false, btn);
         } else {
             throw new Error('無法取得匯率');
         }
     } catch (error) {
         console.error(error);
-        showModal(t('error'), t('rate-update-failed'));
+        showModal(t('error'), t('rate-update-failed'), false, btn);
     } finally {
         btn.textContent = originalText;
         btn.disabled = false;
@@ -1076,7 +1169,8 @@ function addItemFromCart() {
     if (isNaN(quantity)) logDebug('Invalid quantity');
 
     if (!activeCategoryBtn || isNaN(price) || isNaN(quantity)) {
-        showModal(t('tip'), t('select-category-price'));
+        const addItemBtn = document.getElementById('add-item-btn');
+        showModal(t('tip'), t('select-category-price'), false, addItemBtn);
         return;
     }
 
@@ -1118,7 +1212,8 @@ function addExpenseFromDirect() {
     const activeCategoryBtn = document.querySelector('.category-btn.active');
 
     if (isNaN(price) || !activeCategoryBtn) {
-        showModal(t('tip'), t('select-category-amount'));
+        const addExpenseBtn = document.getElementById('add-expense-btn');
+        showModal(t('tip'), t('select-category-amount'), false, addExpenseBtn);
         return;
     }
 
@@ -1296,8 +1391,8 @@ function renderItems() {
             </div>
             <div class="text-right ml-3">
                 <div class="font-bold text-gray-800 tabular-nums">NT$ ${totalTWD.toLocaleString()}</div>
-                <button class="delete-btn text-xs text-red-400 hover:text-red-600 mt-1 transition-colors" onclick="deleteItem(${item.id})" title="刪除此項目">
-                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button onclick="deleteItem(${item.id}, event)" class="delete-btn text-xs text-red-400 hover:text-red-600 p-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
                 </button>
@@ -1374,8 +1469,10 @@ function getCategoryName(cat) {
     return t(categoryKey) || t('expense');
 }
 
-async function deleteItem(id) {
-    const confirmed = await showModal(t('confirm-delete'), t('confirm-delete-msg'), true);
+async function deleteItem(id, event) {
+    // Get trigger element from event if available
+    const trigger = event ? event.target : null;
+    const confirmed = await showModal(t('confirm-delete'), t('confirm-delete-msg'), true, trigger);
     if (confirmed) {
         state.items = state.items.filter(i => i.id !== id);
         saveData();
@@ -1490,13 +1587,15 @@ function renderCart() {
     }
 }
 
-async function checkoutCart() {
+async function checkoutCart(event) {
+    const trigger = event ? event.target : elements.checkoutBtn;
+
     if (state.cartItems.length === 0) {
-        showModal(t('tip'), t('cart-empty'));
+        showModal(t('tip'), t('cart-empty'), false, trigger);
         return;
     }
 
-    const confirmed = await showModal(t('confirm-checkout'), `${t('confirm-checkout-msg')} ${state.cartItems.length} ${t('items')}？`, true);
+    const confirmed = await showModal(t('confirm-checkout'), `${t('confirm-checkout-msg')} ${state.cartItems.length} ${t('items')}？`, true, trigger);
     if (confirmed) {
         // Move items from cart to main list
         state.items = [...state.cartItems, ...state.items];
@@ -1504,7 +1603,9 @@ async function checkoutCart() {
 
         saveData();
         render();
-        showModal(t('success'), t('checkout-success'));
+        // Show success modal near the checkout button (or where it was)
+        // Since checkout button might still be there (but cart empty), we can use it
+        showModal(t('success'), t('checkout-success'), false, trigger);
     }
 }
 

@@ -68,7 +68,7 @@ footer.bg-white {
     }
 
     to {
-        opacity: 0;
+    opacity: 0;
         transform: translateX(100%);
     }
 }
@@ -183,7 +183,7 @@ button:active {
 }
 
 /* Modal Animation */
-#custom-modal>div {
+#modal-content {
     animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
